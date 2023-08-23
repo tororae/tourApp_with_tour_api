@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:tour_with_tourapi/setting/theme.dart';
 
 class SplashScreen extends StatelessWidget {
   const SplashScreen({super.key});
@@ -10,8 +11,8 @@ class SplashScreen extends StatelessWidget {
         decoration: const BoxDecoration(
           gradient: LinearGradient(
             colors: [
-              Color(0xff693FDD),
-              Color(0xff523EBF),
+              mainColor,
+              subColor,
             ],
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
