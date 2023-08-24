@@ -1,4 +1,6 @@
 // ignore: file_names
+import 'dart:html';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
@@ -8,11 +10,11 @@ import 'package:tour_with_tourapi/screen/schedule_screen.dart';
 import 'package:tour_with_tourapi/setting/theme.dart';
 
 List test = <Widget>[
-  ScreenNotice(pageInfo: "홈 화면은 개발 진행중입니다."),
-  ScheduleScreen(),
-  ScreenNotice(pageInfo: "테마 코스 화면은 개발 진행중입니다."),
-  ScreenNotice(pageInfo: "주변 보기 화면은 개발 진행중입니다."),
-  ScreenNotice(pageInfo: "내 설정 화면은 개발 진행중입니다."),
+  const ScreenNotice(pageInfo: "홈 화면은 개발 진행중입니다."),
+  const ScheduleScreen(),
+  const ScreenNotice(pageInfo: "테마 코스 화면은 개발 진행중입니다."),
+  const ScreenNotice(pageInfo: "주변 보기 화면은 개발 진행중입니다."),
+  const ScreenNotice(pageInfo: "내 설정 화면은 개발 진행중입니다."),
 ];
 
 class MainScreen extends StatefulWidget {
@@ -57,11 +59,11 @@ class _MainScreenState extends State<MainScreen> {
       },
       child: Scaffold(
         body: test.elementAt(_selectedIndex),
-        bottomNavigationBar: BottomNavigationBar(
-          type: BottomNavigationBarType.fixed,
-          currentIndex: _selectedIndex,
-          onTap: _onItemTapped,
-          items: [
+
+        //NavigationBar로 교체함. 근데 글자 색 바꾸는 옵션이 없는 듯 함.
+        bottomNavigationBar: NavigationBar(
+          indicatorColor: Colors.white,
+          destinations: [
             myNavigationItem(
                 imagePath: "lib/assets/img1_home.png", labelText: "홈"),
             myNavigationItem(
@@ -74,31 +76,32 @@ class _MainScreenState extends State<MainScreen> {
             myNavigationItem(
                 imagePath: "lib/assets/img5_setting.png", labelText: "내 설정"),
           ],
+          onDestinationSelected: _onItemTapped,
+          selectedIndex: _selectedIndex,
           backgroundColor: mainColor,
-          fixedColor: Colors.white,
-          unselectedItemColor: Colors.white54,
         ),
       ),
     );
   }
 
-  BottomNavigationBarItem myNavigationItem(
+  NavigationDestination myNavigationItem(
       {required String imagePath, required String labelText}) {
-    return BottomNavigationBarItem(
-        icon: Image(
-          image: AssetImage(
-            imagePath,
-          ),
-          height: 30,
-          alignment: Alignment.topCenter,
-          color: Colors.white54,
+    return NavigationDestination(
+      selectedIcon: Image(
+        image: AssetImage(
+          imagePath,
         ),
-        activeIcon: Image(
-          height: 30,
-          alignment: Alignment.topCenter,
-          image: AssetImage(imagePath),
+        color: mainColor,
+        alignment: Alignment.topCenter,
+      ),
+      icon: Image(
+        image: AssetImage(
+          imagePath,
         ),
-        label: labelText);
+        alignment: Alignment.topCenter,
+      ),
+      label: labelText,
+    );
   }
 }
 
