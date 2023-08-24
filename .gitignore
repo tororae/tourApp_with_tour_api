@@ -32,6 +32,9 @@ migrate_working_dir/
 .pub/
 /build/
 
+#중요한 정보라서 commit 안할것들
+/lib/setting/secret.dart
+
 # Symbolication related
 app.*.symbols
 

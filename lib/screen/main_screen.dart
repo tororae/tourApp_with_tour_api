@@ -4,9 +4,32 @@ import 'package:flutter/services.dart';
 
 // ignore: depend_on_referenced_packages
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:tour_with_tourapi/screen/schedule_screen.dart';
+import 'package:tour_with_tourapi/setting/theme.dart';
 
-class MainScreen extends StatelessWidget {
+List test = <Widget>[
+  ScreenNotice(pageInfo: "홈 화면은 개발 진행중입니다."),
+  ScheduleScreen(),
+  ScreenNotice(pageInfo: "테마 코스 화면은 개발 진행중입니다."),
+  ScreenNotice(pageInfo: "주변 보기 화면은 개발 진행중입니다."),
+  ScreenNotice(pageInfo: "내 설정 화면은 개발 진행중입니다."),
+];
+
+class MainScreen extends StatefulWidget {
   const MainScreen({super.key});
+
+  @override
+  State<MainScreen> createState() => _MainScreenState();
+}
+
+class _MainScreenState extends State<MainScreen> {
+  int _selectedIndex = 0;
+  void _onItemTapped(int index) {
+    setState(() {
+      _selectedIndex = index;
+      debugPrint("$index가 선택됨.");
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -32,11 +55,59 @@ class MainScreen extends StatelessWidget {
 
         return false;
       },
-      child: const Scaffold(
-        body: Center(
-          child: Text("글자다 으왕"),
+      child: Scaffold(
+        body: test.elementAt(_selectedIndex),
+        bottomNavigationBar: BottomNavigationBar(
+          type: BottomNavigationBarType.fixed,
+          currentIndex: _selectedIndex,
+          onTap: _onItemTapped,
+          items: [
+            myNavigationItem(
+                imagePath: "lib/assets/img1_home.png", labelText: "홈"),
+            myNavigationItem(
+                imagePath: "lib/assets/img2_schedule.png", labelText: "스케쥴"),
+            myNavigationItem(
+                imagePath: "lib/assets/img3_themecourse.png",
+                labelText: "테마코스"),
+            myNavigationItem(
+                imagePath: "lib/assets/img4_around.png", labelText: "주변보기"),
+            myNavigationItem(
+                imagePath: "lib/assets/img5_setting.png", labelText: "내 설정"),
+          ],
+          backgroundColor: mainColor,
+          fixedColor: Colors.white,
+          unselectedItemColor: Colors.white54,
         ),
       ),
     );
+  }
+
+  BottomNavigationBarItem myNavigationItem(
+      {required String imagePath, required String labelText}) {
+    return BottomNavigationBarItem(
+        icon: Image(
+          image: AssetImage(
+            imagePath,
+          ),
+          height: 30,
+          alignment: Alignment.topCenter,
+          color: Colors.white54,
+        ),
+        activeIcon: Image(
+          height: 30,
+          alignment: Alignment.topCenter,
+          image: AssetImage(imagePath),
+        ),
+        label: labelText);
+  }
+}
+
+final class ScreenNotice extends StatelessWidget {
+  const ScreenNotice({required this.pageInfo, super.key});
+  final String pageInfo;
+
+  @override
+  Widget build(BuildContext context) {
+    return Center(child: Text(pageInfo));
   }
 }
