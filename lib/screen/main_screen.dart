@@ -111,6 +111,10 @@ final class ScreenNotice extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Center(child: Text(pageInfo));
+    return Center(
+        child: Text(
+      pageInfo,
+      style: const TextStyle(color: mainColor, fontSize: 30),
+    ));
   }
 }
