@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:tour_with_tourapi/setting/theme.dart';
 import 'package:scroll_date_picker/scroll_date_picker.dart';
 import 'package:intl/intl.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 
 class ScheduleScreen extends StatefulWidget {
   const ScheduleScreen({super.key});
@@ -10,8 +11,18 @@ class ScheduleScreen extends StatefulWidget {
   State<ScheduleScreen> createState() => _ScheduleScreenState();
 }
 
+DateTime _temporaryDate = DateTime.now();
+
 class _ScheduleScreenState extends State<ScheduleScreen> {
   DateTime _startDate = DateTime.now();
+
+  dateApply(bool isStart) {
+    setState(() {
+      _startDate = _temporaryDate;
+      debugPrint("$_temporaryDate 는 호출됨.");
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Center(
@@ -38,7 +49,12 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
             ),
             const SizedBox(height: 10),
             GestureDetector(
-              onTap: () {},
+              onTap: () => datePicker(
+                context: context,
+                selectedDate: _startDate,
+                scheduleApply: dateApply,
+                isStart: true,
+              ),
               child: Container(
                 padding:
                     const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
@@ -59,6 +75,67 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
     );
   }
 
+  void datePicker(
+      {context,
+      required DateTime selectedDate,
+      required Function scheduleApply,
+      required bool isStart}) {
+    _temporaryDate = selectedDate;
+    showDialog(
+      barrierDismissible: false, //버튼으로만 종료 가능해짐.
+      context: context,
+      builder: (context) {
+        return Dialog(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              SizedBox(
+                height: 120,
+                child: ScrollDatePicker(
+                  selectedDate: selectedDate,
+                  locale: Locale('ko'),
+                  onDateTimeChanged: (DateTime value) {
+                    setState(() {
+                      selectedDate = value;
+                    });
+                  },
+                ),
+              ),
+              Row(
+                children: [
+                  TextButton(
+                    onPressed: () => Navigator.pop(context, 'Cancel'),
+                    child: const Text('Cancel'),
+                  ),
+                  TextButton(
+                    onPressed: () {
+                      if (int.parse(
+                              DateFormat("yyyyMMdd").format(DateTime.now())) >
+                          int.parse(
+                              DateFormat("yyyyMMdd").format(selectedDate))) {
+                        Fluttertoast.showToast(
+                          msg:
+                              "시작일자는 과거로 설정할 수 없습니다. 오늘 날짜인 ${DateFormat("yyyy년 MM월 dd일").format(_startDate)}로 설정됩니다.",
+                        );
+                        _temporaryDate = DateTime.now();
+                      } else {
+                        _temporaryDate = selectedDate;
+                      }
+                      debugPrint("$selectedDate 와 $_temporaryDate");
+                      dateApply(isStart);
+                      Navigator.pop(context, 'OK');
+                    },
+                    child: const Text('OK'),
+                  ),
+                ],
+              )
+            ],
+          ),
+        );
+      },
+    );
+  }
+
   ///스케쥴 화면에서 텍스트를 입력받는 컴포넌트.
   ///추후 공용으로 쓰이게 되면 이름 변경 가능성 있음.
   ///컨트롤러를 통한 값 연동에 대해 공부해야함.
@@ -76,7 +153,7 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
             Radius.circular(20),
           ),
         ),
-        focusedBorder: OutlineInputBorder(
+        focusedBorder: const OutlineInputBorder(
           borderSide: BorderSide(
             color: mainColor,
           ),
