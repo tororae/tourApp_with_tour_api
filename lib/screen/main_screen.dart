@@ -1,6 +1,3 @@
-// ignore: file_names
-import 'dart:html';
-
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
