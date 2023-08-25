@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:tour_with_tourapi/setting/theme.dart';
 import 'package:scroll_date_picker/scroll_date_picker.dart';
@@ -86,22 +87,27 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
       context: context,
       builder: (context) {
         return Dialog(
+          insetPadding: const EdgeInsets.symmetric(vertical: 30),
           child: Column(
+            mainAxisSize: MainAxisSize.min,
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               SizedBox(
-                height: 120,
-                child: ScrollDatePicker(
-                  selectedDate: selectedDate,
-                  locale: Locale('ko'),
-                  onDateTimeChanged: (DateTime value) {
-                    setState(() {
-                      selectedDate = value;
-                    });
+                height: 400,
+                child: CupertinoDatePicker(
+                  initialDateTime: _startDate,
+                  mode: CupertinoDatePickerMode.date,
+                  use24hFormat: true,
+                  // This shows day of week alongside day of month
+                  showDayOfWeek: true,
+                  // This is called when the user changes the date.
+                  onDateTimeChanged: (DateTime newDate) {
+                    setState(() => _startDate = newDate);
                   },
                 ),
               ),
               Row(
+                mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   TextButton(
                     onPressed: () => Navigator.pop(context, 'Cancel'),
@@ -109,18 +115,7 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
                   ),
                   TextButton(
                     onPressed: () {
-                      if (int.parse(
-                              DateFormat("yyyyMMdd").format(DateTime.now())) >
-                          int.parse(
-                              DateFormat("yyyyMMdd").format(selectedDate))) {
-                        Fluttertoast.showToast(
-                          msg:
-                              "시작일자는 과거로 설정할 수 없습니다. 오늘 날짜인 ${DateFormat("yyyy년 MM월 dd일").format(_startDate)}로 설정됩니다.",
-                        );
-                        _temporaryDate = DateTime.now();
-                      } else {
-                        _temporaryDate = selectedDate;
-                      }
+                      _temporaryDate = selectedDate;
                       debugPrint("$selectedDate 와 $_temporaryDate");
                       dateApply(isStart);
                       Navigator.pop(context, 'OK');
@@ -128,7 +123,7 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
                     child: const Text('OK'),
                   ),
                 ],
-              )
+              ),
             ],
           ),
         );
