@@ -2,7 +2,6 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:tour_with_tourapi/setting/theme.dart';
 import 'package:intl/intl.dart';
-import 'package:fluttertoast/fluttertoast.dart';
 
 class ScheduleScreen extends StatefulWidget {
   const ScheduleScreen({super.key});
