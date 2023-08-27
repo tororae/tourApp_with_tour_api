@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:tour_with_tourapi/setting/theme.dart';
 import 'package:intl/intl.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 
 class ScheduleScreen extends StatefulWidget {
   const ScheduleScreen({super.key});
@@ -14,11 +15,28 @@ DateTime _temporaryDate = DateTime.now();
 
 class _ScheduleScreenState extends State<ScheduleScreen> {
   DateTime _startDate = DateTime.now();
+  DateTime _endDate = DateTime.now();
 
   dateApply(bool isStart) {
     setState(() {
-      _startDate = _temporaryDate;
-      debugPrint("$_temporaryDate 는 호출됨.");
+      if (isStart) {
+        _startDate = _temporaryDate;
+        if (_startDate.difference(_endDate).inDays >= 1) {
+          _endDate = _startDate;
+        }
+        Navigator.pop(context, 'OK');
+      } else {
+        debugPrint(
+            "${_temporaryDate.difference(_startDate).inDays}와 ${_startDate.difference(_temporaryDate).inDays}");
+        if (_temporaryDate.difference(_startDate).inDays >= 1) {
+          _endDate = _temporaryDate;
+          Navigator.pop(context, 'OK');
+        } else {
+          Fluttertoast.showToast(
+            msg: "출발 일자보다 빠르게 설정할 수 없습니다.",
+          );
+        }
+      }
     });
   }
 
@@ -42,31 +60,71 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
             const SizedBox(height: 20),
             scheduleTitleText(titleText: "일정을 정해주세요."),
             const SizedBox(height: 10),
-            const Text(
-              "출발 일자",
-              style: TextStyle(fontSize: 18),
-            ),
-            const SizedBox(height: 10),
-            GestureDetector(
-              onTap: () => datePicker(
-                context: context,
-                selectedDate: _startDate,
-                scheduleApply: dateApply,
-                isStart: true,
-              ),
-              child: Container(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-                decoration: BoxDecoration(
-                  border: Border.all(color: mainColor),
-                  borderRadius: const BorderRadius.all(
-                    Radius.circular(15),
-                  ),
+            //날짜선택부
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: [
+                Column(
+                  children: [
+                    const Text(
+                      "출발 일자",
+                      style: TextStyle(fontSize: 18),
+                    ),
+                    const SizedBox(height: 10),
+                    GestureDetector(
+                      onTap: () => datePicker(
+                        context: context,
+                        selectedDate: _startDate,
+                        scheduleApply: dateApply,
+                        isStart: true,
+                      ),
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 10, vertical: 5),
+                        decoration: BoxDecoration(
+                          border: Border.all(color: mainColor),
+                          borderRadius: const BorderRadius.all(
+                            Radius.circular(15),
+                          ),
+                        ),
+                        child: Text(
+                          DateFormat("yyyy년 MM월 dd일").format(_startDate),
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
-                child: Text(
-                  DateFormat("yyyy년 MM월 dd일").format(_startDate),
+                Column(
+                  children: [
+                    const Text(
+                      "도착 일자",
+                      style: TextStyle(fontSize: 18),
+                    ),
+                    const SizedBox(height: 10),
+                    GestureDetector(
+                      onTap: () => datePicker(
+                        context: context,
+                        selectedDate: _endDate,
+                        scheduleApply: dateApply,
+                        isStart: false,
+                      ),
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 10, vertical: 5),
+                        decoration: BoxDecoration(
+                          border: Border.all(color: mainColor),
+                          borderRadius: const BorderRadius.all(
+                            Radius.circular(15),
+                          ),
+                        ),
+                        child: Text(
+                          DateFormat("yyyy년 MM월 dd일").format(_endDate),
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
-              ),
+              ],
             ),
           ],
         ),
@@ -74,11 +132,12 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
     );
   }
 
-  void datePicker(
-      {context,
-      required DateTime selectedDate,
-      required Function scheduleApply,
-      required bool isStart}) {
+  void datePicker({
+    context,
+    required DateTime selectedDate,
+    required Function scheduleApply,
+    required bool isStart,
+  }) {
     _temporaryDate = selectedDate;
     showDialog(
       barrierDismissible: false, //버튼으로만 종료 가능해짐.
@@ -93,14 +152,20 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
               SizedBox(
                 height: 400,
                 child: CupertinoDatePicker(
-                  initialDateTime: _startDate,
+                  itemExtent: 40,
+                  minimumYear: DateTime.now().year,
+                  minimumDate: DateTime.now().subtract(
+                    Duration(minutes: 1),
+                  ),
+                  maximumYear: DateTime.now().year + 1,
+                  initialDateTime: _temporaryDate,
                   mode: CupertinoDatePickerMode.date,
                   use24hFormat: true,
                   // This shows day of week alongside day of month
                   showDayOfWeek: true,
                   // This is called when the user changes the date.
                   onDateTimeChanged: (DateTime newDate) {
-                    setState(() => _startDate = newDate);
+                    setState(() => _temporaryDate = newDate);
                   },
                 ),
               ),
@@ -113,10 +178,7 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
                   ),
                   TextButton(
                     onPressed: () {
-                      _temporaryDate = selectedDate;
-                      debugPrint("$selectedDate 와 $_temporaryDate");
                       dateApply(isStart);
-                      Navigator.pop(context, 'OK');
                     },
                     child: const Text('OK'),
                   ),
