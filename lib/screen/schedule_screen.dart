@@ -17,7 +17,7 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
   DateTime _startDate = DateTime.now();
   DateTime _endDate = DateTime.now();
 
-  dateApply(bool isStart) {
+  dayApply(bool isStart) {
     setState(() {
       if (isStart) {
         _startDate = _temporaryDate;
@@ -26,14 +26,33 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
         }
         Navigator.pop(context, 'OK');
       } else {
-        debugPrint(
-            "${_temporaryDate.difference(_startDate).inDays}와 ${_startDate.difference(_temporaryDate).inDays}");
         if (_temporaryDate.difference(_startDate).inDays >= 1) {
           _endDate = _temporaryDate;
           Navigator.pop(context, 'OK');
         } else {
           Fluttertoast.showToast(
             msg: "출발 일자보다 빠르게 설정할 수 없습니다.",
+          );
+        }
+      }
+    });
+  }
+
+  timeApply(bool isStart) {
+    setState(() {
+      if (isStart) {
+        _startDate = _temporaryDate;
+        if (_startDate.difference(_endDate).inDays == 0) {
+          _endDate = _startDate;
+        }
+        Navigator.pop(context, 'OK');
+      } else {
+        if (_temporaryDate.difference(_startDate).inMinutes >= 1) {
+          _endDate = _temporaryDate;
+          Navigator.pop(context, 'OK');
+        } else {
+          Fluttertoast.showToast(
+            msg: "출발 일시보다 빠르게 설정할 수 없습니다.",
           );
         }
       }
@@ -48,94 +67,159 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
           horizontal: 30,
           vertical: 20,
         ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            scheduleTitleText(titleText: "여행의 테마를 입력해주세요."),
-            const SizedBox(height: 10),
-            scheduleTextField(hintText: "힐링/벚꽃놀이/산책"),
-            const SizedBox(height: 20),
-            scheduleTitleText(titleText: "어떤 지역을 여행하나요?"),
-            const Text("드랍박스 예정. 서울 등 클릭시 상세 지역 추가할지 고민중"),
-            const SizedBox(height: 20),
-            scheduleTitleText(titleText: "일정을 정해주세요."),
-            const SizedBox(height: 10),
-            //날짜선택부
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: [
-                Column(
-                  children: [
-                    const Text(
-                      "출발 일자",
-                      style: TextStyle(fontSize: 18),
-                    ),
-                    const SizedBox(height: 10),
-                    GestureDetector(
-                      onTap: () => datePicker(
-                        context: context,
-                        selectedDate: _startDate,
-                        scheduleApply: dateApply,
-                        isStart: true,
+        child: SingleChildScrollView(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              scheduleTitleText(titleText: "여행의 테마를 입력해주세요."),
+              const SizedBox(height: 10),
+              scheduleTextField(hintText: "힐링/벚꽃놀이/산책"),
+              const SizedBox(height: 20),
+              scheduleTitleText(titleText: "어떤 지역을 여행하나요?"),
+              const Text("드랍박스 예정. 서울 등 클릭시 상세 지역 추가할지 고민중"),
+              const SizedBox(height: 20),
+              scheduleTitleText(titleText: "일정을 정해주세요."),
+              const SizedBox(height: 10),
+              //날짜선택부
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceAround,
+                children: [
+                  Column(
+                    children: [
+                      const Text(
+                        "출발 일자",
+                        style: TextStyle(fontSize: 18),
                       ),
-                      child: Container(
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 10, vertical: 5),
-                        decoration: BoxDecoration(
-                          border: Border.all(color: mainColor),
-                          borderRadius: const BorderRadius.all(
-                            Radius.circular(15),
+                      const SizedBox(height: 10),
+                      GestureDetector(
+                        onTap: () => datePicker(
+                          context: context,
+                          selectedDate: _startDate,
+                          isStart: true,
+                        ),
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 10, vertical: 5),
+                          decoration: BoxDecoration(
+                            border: Border.all(color: mainColor),
+                            borderRadius: const BorderRadius.all(
+                              Radius.circular(15),
+                            ),
+                          ),
+                          child: Text(
+                            DateFormat("yyyy년 MM월 dd일").format(_startDate),
                           ),
                         ),
-                        child: Text(
-                          DateFormat("yyyy년 MM월 dd일").format(_startDate),
+                      ),
+                    ],
+                  ),
+                  Column(
+                    children: [
+                      const Text(
+                        "도착 일자",
+                        style: TextStyle(fontSize: 18),
+                      ),
+                      const SizedBox(height: 10),
+                      GestureDetector(
+                        onTap: () => datePicker(
+                          context: context,
+                          selectedDate: _endDate,
+                          isStart: false,
                         ),
-                      ),
-                    ),
-                  ],
-                ),
-                Column(
-                  children: [
-                    const Text(
-                      "도착 일자",
-                      style: TextStyle(fontSize: 18),
-                    ),
-                    const SizedBox(height: 10),
-                    GestureDetector(
-                      onTap: () => datePicker(
-                        context: context,
-                        selectedDate: _endDate,
-                        scheduleApply: dateApply,
-                        isStart: false,
-                      ),
-                      child: Container(
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 10, vertical: 5),
-                        decoration: BoxDecoration(
-                          border: Border.all(color: mainColor),
-                          borderRadius: const BorderRadius.all(
-                            Radius.circular(15),
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 10, vertical: 5),
+                          decoration: BoxDecoration(
+                            border: Border.all(color: mainColor),
+                            borderRadius: const BorderRadius.all(
+                              Radius.circular(15),
+                            ),
+                          ),
+                          child: Text(
+                            DateFormat("yyyy년 MM월 dd일").format(_endDate),
                           ),
                         ),
-                        child: Text(
-                          DateFormat("yyyy년 MM월 dd일").format(_endDate),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+              const SizedBox(height: 10),
+
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceAround,
+                children: [
+                  Column(
+                    children: [
+                      const Text(
+                        "출발 시간",
+                        style: TextStyle(fontSize: 18),
+                      ),
+                      const SizedBox(height: 10),
+                      GestureDetector(
+                        onTap: () => timePicker(
+                          context: context,
+                          selectedDate: _startDate,
+                          isStart: true,
+                        ),
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 10, vertical: 5),
+                          decoration: BoxDecoration(
+                            border: Border.all(color: mainColor),
+                            borderRadius: const BorderRadius.all(
+                              Radius.circular(15),
+                            ),
+                          ),
+                          child: Text(
+                            DateFormat.Hm().format(_startDate),
+                          ),
                         ),
                       ),
-                    ),
-                  ],
-                ),
-              ],
-            ),
-          ],
+                    ],
+                  ),
+                  Column(
+                    children: [
+                      const Text(
+                        "도착 시간",
+                        style: TextStyle(fontSize: 18),
+                      ),
+                      const SizedBox(height: 10),
+                      GestureDetector(
+                        onTap: () => timePicker(
+                          context: context,
+                          selectedDate: _endDate,
+                          isStart: false,
+                        ),
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 10, vertical: 5),
+                          decoration: BoxDecoration(
+                            border: Border.all(color: mainColor),
+                            borderRadius: const BorderRadius.all(
+                              Radius.circular(15),
+                            ),
+                          ),
+                          child: Text(
+                            DateFormat.Hm().format(_endDate),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ],
+          ),
         ),
       ),
     );
   }
 
+//쿠퍼티노 디자인의 날짜 선택기
   void datePicker({
     context,
     required DateTime selectedDate,
-    required Function scheduleApply,
     required bool isStart,
   }) {
     _temporaryDate = selectedDate;
@@ -155,13 +239,11 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
                   itemExtent: 40,
                   minimumYear: DateTime.now().year,
                   minimumDate: DateTime.now().subtract(
-                    Duration(minutes: 1),
+                    const Duration(minutes: 1),
                   ),
                   maximumYear: DateTime.now().year + 1,
                   initialDateTime: _temporaryDate,
                   mode: CupertinoDatePickerMode.date,
-                  use24hFormat: true,
-                  // This shows day of week alongside day of month
                   showDayOfWeek: true,
                   // This is called when the user changes the date.
                   onDateTimeChanged: (DateTime newDate) {
@@ -178,7 +260,58 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
                   ),
                   TextButton(
                     onPressed: () {
-                      dateApply(isStart);
+                      dayApply(isStart);
+                    },
+                    child: const Text('OK'),
+                  ),
+                ],
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
+//쿠퍼티노 디자인의 시간 선택기
+  void timePicker({
+    context,
+    required DateTime selectedDate,
+    required bool isStart,
+  }) {
+    _temporaryDate = selectedDate;
+    showDialog(
+      barrierDismissible: false, //버튼으로만 종료 가능해짐.
+      context: context,
+      builder: (context) {
+        return Dialog(
+          insetPadding: const EdgeInsets.symmetric(vertical: 30),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              SizedBox(
+                height: 400,
+                child: CupertinoDatePicker(
+                  itemExtent: 40,
+                  initialDateTime: _temporaryDate,
+                  mode: CupertinoDatePickerMode.time,
+                  use24hFormat: true,
+                  onDateTimeChanged: (DateTime newDate) {
+                    setState(() => _temporaryDate = newDate);
+                  },
+                ),
+              ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  TextButton(
+                    onPressed: () => Navigator.pop(context, 'Cancel'),
+                    child: const Text('Cancel'),
+                  ),
+                  TextButton(
+                    onPressed: () {
+                      timeApply(isStart);
                     },
                     child: const Text('OK'),
                   ),
