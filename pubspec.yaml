@@ -13,6 +13,8 @@ dependencies:
   intl: ^0.18.1
   flutter_localizations:
     sdk: flutter
+  geolocator: ^10.0.0
+  http:
 
 dev_dependencies:
   flutter_test:
