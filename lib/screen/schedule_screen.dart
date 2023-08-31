@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:tour_with_tourapi/screen/naver_map_func.dart';
 import 'package:tour_with_tourapi/setting/theme.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:intl/intl.dart';
@@ -76,7 +77,28 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
               scheduleTextField(hintText: "힐링/벚꽃놀이/산책"),
               const SizedBox(height: 20),
               scheduleTitleText(titleText: "어떤 지역을 여행하나요?"),
-              const Text("드랍박스 예정. 서울 등 클릭시 상세 지역 추가할지 고민중"),
+              const SizedBox(height: 10),
+              GestureDetector(
+                onTap: () {
+                  showDialog(
+                    context: context,
+                    builder: (context) {
+                      return naverMapTest();
+                    },
+                  );
+                },
+                child: Container(
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                  decoration: BoxDecoration(
+                    border: Border.all(width: 1, color: mainColor),
+                    borderRadius: const BorderRadius.all(
+                      Radius.circular(25),
+                    ),
+                  ),
+                  child: const Text("지도 호출"),
+                ),
+              ),
               const SizedBox(height: 20),
               scheduleTitleText(titleText: "일정을 정해주세요."),
               const SizedBox(height: 10),

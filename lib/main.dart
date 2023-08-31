@@ -1,8 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:tour_with_tourapi/screen/splash.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:flutter_naver_map/flutter_naver_map.dart';
+import 'package:tour_with_tourapi/setting/secret.dart';
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await NaverMapSdk.instance.initialize(
+    clientId: naverMapApiKey,
+    onAuthFailed: (ex) {
+      debugPrint("********* 네이버맵 인증오류 : $ex *********");
+    },
+  );
   runApp(const MainApp());
 }
 
