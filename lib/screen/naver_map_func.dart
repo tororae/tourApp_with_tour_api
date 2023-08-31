@@ -16,7 +16,8 @@ Position getPosition = currentPosition ??
       speedAccuracy: 0,
     );
 
-NaverMap naverMapTest() {
+NaverMap naverMapTest(context) {
+  NaverMapController myMapController;
   debugPrint("위도 : ${getPosition.latitude}, 경도 : ${getPosition.longitude}");
   return NaverMap(
     options: NaverMapViewOptions(
@@ -26,9 +27,14 @@ NaverMap naverMapTest() {
         bearing: 0,
         tilt: 0,
       ),
+      mapType: NMapType.basic,
+      activeLayerGroups: [NLayerGroup.building, NLayerGroup.transit],
     ),
-    onMapReady: (controller) {
+    onMapReady: (myMapController) {
       debugPrint("네이버 맵 로딩됨!");
+    },
+    onMapTapped: (point, latLng) {
+      Navigator.pop(context);
     },
   );
 }

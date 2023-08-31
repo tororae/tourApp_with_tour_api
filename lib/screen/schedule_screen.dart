@@ -83,7 +83,7 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
                   showDialog(
                     context: context,
                     builder: (context) {
-                      return naverMapTest();
+                      return naverMapTest(context);
                     },
                   );
                 },
