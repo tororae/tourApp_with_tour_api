@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
-import 'dart:convert';
 import 'package:geolocator/geolocator.dart';
+import 'package:tour_with_tourapi/screen/naver_map_func.dart';
 
 const Color mainColor = Color(0xff693FDD);
 const Color subColor = Color(0xff523EBF);
@@ -12,7 +11,7 @@ Position? currentPosition;
 List<Map<String, dynamic>> jsonData = [];
 bool isLoading = false;
 
-Future<void> getCurrentLocation() async {
+Future<Position> getCurrentLocation(context) async {
   bool serviceEnabled;
   LocationPermission permission;
 
@@ -35,18 +34,14 @@ Future<void> getCurrentLocation() async {
   }
 
   Position position = await Geolocator.getCurrentPosition();
-  currentPosition = position;
-  ;
-  position.accuracy;
-  position.altitude;
-  position.heading;
-  position.speed;
-  position.speedAccuracy;
 
   debugPrint(
       "내 위치정보를 뿌린다.\n$currentPosition\ntimestamp : ${position.timestamp}\naccuracy : ${position.accuracy}\naltitude : ${position.altitude}\nheading : ${position.heading}\nspeed : ${position.speed}\nspeedAccuracy : ${position.speedAccuracy}\n끝났다.");
   debugPrint("타임스탬프 : ${DateTime.timestamp()}");
-  // fetchData();
+
+  return position;
+  // return getAddress(context, "${position.longitude},${position.latitude}"); //주소를 반환하는데 이로 인해 위치값을 전달 못하게 됨.
+  //함수 분리 필요.
 }
 
   // Future<void> fetchData() async {

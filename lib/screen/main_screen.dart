@@ -3,10 +3,13 @@ import 'package:flutter/services.dart';
 
 // ignore: depend_on_referenced_packages
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:provider/provider.dart';
+import 'package:tour_with_tourapi/main.dart';
+import 'package:tour_with_tourapi/screen/naver_map_func.dart';
 import 'package:tour_with_tourapi/screen/schedule_screen.dart';
 import 'package:tour_with_tourapi/setting/theme.dart';
 
-List test = <Widget>[
+List navigationItems = <Widget>[
   const ScreenNotice(pageInfo: "홈 화면은 개발 진행중입니다."),
   const ScheduleScreen(),
   const ScreenNotice(pageInfo: "테마 코스 화면은 개발 진행중입니다."),
@@ -27,10 +30,21 @@ class _MainScreenState extends State<MainScreen> {
   int page = 1;
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
     debugPrint("권한요청 간다.");
-    getCurrentLocation();
+    final locationProvider =
+        Provider.of<LocationProvider>(context, listen: false);
+
+    //이를 통해서 내 현재위치를 스케쥴로 전달.
+    getCurrentLocation(context).then(
+      (value) {
+        //현재 위치에 값 저장.
+        currentPosition = value;
+        //포지션의 위도경도 주소로 변환 후 받아서 프로바이더에 전달.
+        getAddress(context, "${value.longitude},${value.latitude}")
+            .then((value) => locationProvider.updateText(value));
+      },
+    );
   }
 
   // final ScrollController _scrollController = ScrollController();
@@ -66,7 +80,7 @@ class _MainScreenState extends State<MainScreen> {
         return false;
       },
       child: Scaffold(
-        body: test.elementAt(_selectedIndex),
+        body: navigationItems.elementAt(_selectedIndex),
 
         //NavigationBar로 교체함. 근데 글자 색 바꾸는 옵션이 없는 듯 함.
         bottomNavigationBar: NavigationBar(

@@ -1,5 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:tour_with_tourapi/main.dart';
 import 'package:tour_with_tourapi/screen/naver_map_func.dart';
 import 'package:tour_with_tourapi/setting/theme.dart';
 import 'package:fluttertoast/fluttertoast.dart';
@@ -62,6 +64,7 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final locationProvider = Provider.of<LocationProvider>(context);
     return Center(
       child: Padding(
         padding: const EdgeInsets.symmetric(
@@ -77,6 +80,12 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
               scheduleTextField(hintText: "힐링/벚꽃놀이/산책"),
               const SizedBox(height: 20),
               scheduleTitleText(titleText: "어떤 지역을 여행하나요?"),
+              const SizedBox(height: 10),
+
+              Text(
+                "현재 선택위치\n${locationProvider.text}",
+                style: const TextStyle(fontSize: 18),
+              ),
               const SizedBox(height: 10),
               GestureDetector(
                 onTap: () {
