@@ -108,28 +108,107 @@ chkPickLocation(context, position) {
   final locationProvider = Provider.of<LocationProvider>(context);
 
   return AlertDialog(
-    title: const Text(
-      "해당 지역으로 위치를 설정할까요?",
-      style: TextStyle(
-        color: mainColor,
-        fontSize: 14,
-      ),
-      textAlign: TextAlign.center,
+    title: Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        const Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(
+              Icons.location_on_outlined,
+              color: mainColor,
+              size: 19,
+            ),
+            Text(
+              "여행 목적지 선택중..",
+              style: TextStyle(
+                color: mainColor,
+                fontSize: 18,
+              ),
+              textAlign: TextAlign.center,
+            ),
+          ],
+        ),
+        GestureDetector(
+          onTap: () => Navigator.pop(context),
+          child: const Icon(
+            Icons.close,
+            color: mainColor,
+            size: 30,
+          ),
+        ),
+      ],
     ),
     content: Column(
       mainAxisSize: MainAxisSize.min,
       children: [
-        Text("선택된 지역 - ${locationProvider.popup_location}"),
-        TextButton(
-          onPressed: () {
+        Container(
+          padding: const EdgeInsets.all(10),
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(10),
+            border: Border.all(
+              color: mainColor,
+            ),
+          ),
+          child: SingleChildScrollView(
+            scrollDirection: Axis.horizontal,
+            child: Text(
+              locationProvider.popup_location,
+              style: const TextStyle(
+                  color: mainColor, fontWeight: FontWeight.bold),
+            ),
+          ),
+        ),
+        const SizedBox(height: 8),
+        const Text("여기로 떠날까요?"),
+        const SizedBox(height: 20),
+        GestureDetector(
+          onTap: () {
             Navigator.pop(context);
             Navigator.pop(context);
-
             locationProvider.updateText(areaName);
-            debugPrint(
-                "$areaName 이 리턴된다!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
           },
-          child: const Text('OK'),
+          child: Container(
+            width: MediaQuery.of(context).size.width * 0.8,
+            padding: const EdgeInsets.all(15),
+            decoration: BoxDecoration(
+              color: mainColor,
+              borderRadius: BorderRadius.circular(5),
+            ),
+            child: const Text(
+              '네, 여기로 할래요.',
+              style: TextStyle(
+                color: Colors.white,
+              ),
+              textAlign: TextAlign.center,
+            ),
+          ),
+        ),
+        const SizedBox(
+          height: 10,
+        ),
+        GestureDetector(
+          onTap: () {
+            Navigator.pop(context);
+            Navigator.pop(context);
+          },
+          child: Container(
+            width: MediaQuery.of(context).size.width * 0.8,
+            padding: const EdgeInsets.all(15),
+            decoration: BoxDecoration(
+              border: Border.all(color: mainColor),
+              borderRadius: BorderRadius.circular(
+                5,
+              ),
+            ),
+            child: const Text(
+              '취소하고 나갈게요.',
+              style: TextStyle(
+                color: mainColor,
+              ),
+              textAlign: TextAlign.center,
+            ),
+          ),
         ),
       ],
     ),

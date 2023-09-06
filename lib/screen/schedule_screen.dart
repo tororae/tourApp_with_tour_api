@@ -65,185 +65,208 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
   @override
   Widget build(BuildContext context) {
     final locationProvider = Provider.of<LocationProvider>(context);
-    return Center(
-      child: Padding(
-        padding: const EdgeInsets.symmetric(
-          horizontal: 30,
-          vertical: 20,
+    TextEditingController _searchRangeController =
+        TextEditingController(); //검색범위 설정용 변수
+    return Stack(
+      children: [
+        Image(
+          height: MediaQuery.of(context).size.height,
+          image: const AssetImage(
+            "lib/assets/background.jpg",
+          ),
+          fit: BoxFit.cover,
         ),
-        child: SingleChildScrollView(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              scheduleTitleText(titleText: "여행의 테마를 입력해주세요."),
-              const SizedBox(height: 10),
-              scheduleTextField(hintText: "힐링/벚꽃놀이/산책"),
-              const SizedBox(height: 20),
-              scheduleTitleText(titleText: "어떤 지역을 여행하나요?"),
-              const SizedBox(height: 10),
-
-              Text(
-                "현재 선택위치\n${locationProvider.text}",
-                style: const TextStyle(fontSize: 18),
-              ),
-              const SizedBox(height: 10),
-              GestureDetector(
-                onTap: () {
-                  showDialog(
-                    context: context,
-                    builder: (context) {
-                      return naverMapTest(context);
+        Center(
+          child: Padding(
+            padding: const EdgeInsets.symmetric(
+              horizontal: 30,
+              vertical: 20,
+            ),
+            child: SingleChildScrollView(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  //키워드 기반 검색과 위치 기반 검색이 중복제공되지 않음.
+                  //우선적으로 위치 기반을 위해 해당 기능 숨김처리.
+                  // scheduleTitleText(titleText: "여행의 테마를 입력해주세요."),
+                  // const SizedBox(height: 10),
+                  // scheduleTextField(hintText: "힐링/벚꽃놀이/산책"),
+                  // const SizedBox(height: 20),
+                  scheduleTitleText(titleText: "어떤 지역을 여행하나요?"),
+                  const SizedBox(height: 10),
+                  const Text(
+                    "현재 선택위치",
+                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                  ),
+                  Text(
+                    locationProvider.text,
+                    style: const TextStyle(fontSize: 18),
+                  ),
+                  const SizedBox(height: 10),
+                  GestureDetector(
+                    onTap: () {
+                      showDialog(
+                        context: context,
+                        builder: (context) {
+                          return naverMapTest(context);
+                        },
+                      );
                     },
-                  );
-                },
-                child: Container(
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-                  decoration: BoxDecoration(
-                    border: Border.all(width: 1, color: mainColor),
-                    borderRadius: const BorderRadius.all(
-                      Radius.circular(25),
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 10, vertical: 5),
+                      decoration: BoxDecoration(
+                        border: Border.all(width: 1, color: mainColor),
+                        borderRadius: const BorderRadius.all(
+                          Radius.circular(25),
+                        ),
+                      ),
+                      child: const Text("지도 호출"),
                     ),
                   ),
-                  child: const Text("지도 호출"),
-                ),
-              ),
-              const SizedBox(height: 20),
-              scheduleTitleText(titleText: "일정을 정해주세요."),
-              const SizedBox(height: 10),
-              //날짜선택부
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceAround,
-                children: [
-                  Column(
+                  const SizedBox(height: 20),
+                  scheduleTitleText(titleText: "검색 범위를 선택해주세요.\n(미터 단위)"),
+                  const SizedBox(height: 10),
+                  scheduleTextField(
+                      hintText: "1000", controller: _searchRangeController),
+                  const SizedBox(height: 20),
+                  scheduleTitleText(titleText: "일정을 정해주세요."),
+                  const SizedBox(height: 10),
+                  //날짜선택부
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceAround,
                     children: [
-                      const Text(
-                        "출발 일자",
-                        style: TextStyle(fontSize: 18),
-                      ),
-                      const SizedBox(height: 10),
-                      GestureDetector(
-                        onTap: () => datePicker(
-                          context: context,
-                          selectedDate: _startDate,
-                          isStart: true,
-                        ),
-                        child: Container(
-                          padding: const EdgeInsets.symmetric(
-                              horizontal: 10, vertical: 5),
-                          decoration: BoxDecoration(
-                            border: Border.all(color: mainColor),
-                            borderRadius: const BorderRadius.all(
-                              Radius.circular(15),
+                      Column(
+                        children: [
+                          const Text(
+                            "출발 일자",
+                            style: TextStyle(fontSize: 18),
+                          ),
+                          const SizedBox(height: 10),
+                          GestureDetector(
+                            onTap: () => datePicker(
+                              context: context,
+                              selectedDate: _startDate,
+                              isStart: true,
+                            ),
+                            child: Container(
+                              padding: const EdgeInsets.symmetric(
+                                  horizontal: 10, vertical: 5),
+                              decoration: BoxDecoration(
+                                border: Border.all(color: mainColor),
+                                borderRadius: const BorderRadius.all(
+                                  Radius.circular(15),
+                                ),
+                              ),
+                              child: Text(
+                                DateFormat("yyyy년 MM월 dd일").format(_startDate),
+                              ),
                             ),
                           ),
-                          child: Text(
-                            DateFormat("yyyy년 MM월 dd일").format(_startDate),
+                        ],
+                      ),
+                      Column(
+                        children: [
+                          const Text(
+                            "도착 일자",
+                            style: TextStyle(fontSize: 18),
                           ),
-                        ),
+                          const SizedBox(height: 10),
+                          GestureDetector(
+                            onTap: () => datePicker(
+                              context: context,
+                              selectedDate: _endDate,
+                              isStart: false,
+                            ),
+                            child: Container(
+                              padding: const EdgeInsets.symmetric(
+                                  horizontal: 10, vertical: 5),
+                              decoration: BoxDecoration(
+                                border: Border.all(color: mainColor),
+                                borderRadius: const BorderRadius.all(
+                                  Radius.circular(15),
+                                ),
+                              ),
+                              child: Text(
+                                DateFormat("yyyy년 MM월 dd일").format(_endDate),
+                              ),
+                            ),
+                          ),
+                        ],
                       ),
                     ],
                   ),
-                  Column(
-                    children: [
-                      const Text(
-                        "도착 일자",
-                        style: TextStyle(fontSize: 18),
-                      ),
-                      const SizedBox(height: 10),
-                      GestureDetector(
-                        onTap: () => datePicker(
-                          context: context,
-                          selectedDate: _endDate,
-                          isStart: false,
-                        ),
-                        child: Container(
-                          padding: const EdgeInsets.symmetric(
-                              horizontal: 10, vertical: 5),
-                          decoration: BoxDecoration(
-                            border: Border.all(color: mainColor),
-                            borderRadius: const BorderRadius.all(
-                              Radius.circular(15),
-                            ),
-                          ),
-                          child: Text(
-                            DateFormat("yyyy년 MM월 dd일").format(_endDate),
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ],
-              ),
-              const SizedBox(height: 10),
+                  const SizedBox(height: 10),
 
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceAround,
-                children: [
-                  Column(
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceAround,
                     children: [
-                      const Text(
-                        "출발 시간",
-                        style: TextStyle(fontSize: 18),
-                      ),
-                      const SizedBox(height: 10),
-                      GestureDetector(
-                        onTap: () => timePicker(
-                          context: context,
-                          selectedDate: _startDate,
-                          isStart: true,
-                        ),
-                        child: Container(
-                          padding: const EdgeInsets.symmetric(
-                              horizontal: 10, vertical: 5),
-                          decoration: BoxDecoration(
-                            border: Border.all(color: mainColor),
-                            borderRadius: const BorderRadius.all(
-                              Radius.circular(15),
+                      Column(
+                        children: [
+                          const Text(
+                            "출발 시간",
+                            style: TextStyle(fontSize: 18),
+                          ),
+                          const SizedBox(height: 10),
+                          GestureDetector(
+                            onTap: () => timePicker(
+                              context: context,
+                              selectedDate: _startDate,
+                              isStart: true,
+                            ),
+                            child: Container(
+                              padding: const EdgeInsets.symmetric(
+                                  horizontal: 10, vertical: 5),
+                              decoration: BoxDecoration(
+                                border: Border.all(color: mainColor),
+                                borderRadius: const BorderRadius.all(
+                                  Radius.circular(15),
+                                ),
+                              ),
+                              child: Text(
+                                DateFormat.Hm().format(_startDate),
+                              ),
                             ),
                           ),
-                          child: Text(
-                            DateFormat.Hm().format(_startDate),
+                        ],
+                      ),
+                      Column(
+                        children: [
+                          const Text(
+                            "도착 시간",
+                            style: TextStyle(fontSize: 18),
                           ),
-                        ),
-                      ),
-                    ],
-                  ),
-                  Column(
-                    children: [
-                      const Text(
-                        "도착 시간",
-                        style: TextStyle(fontSize: 18),
-                      ),
-                      const SizedBox(height: 10),
-                      GestureDetector(
-                        onTap: () => timePicker(
-                          context: context,
-                          selectedDate: _endDate,
-                          isStart: false,
-                        ),
-                        child: Container(
-                          padding: const EdgeInsets.symmetric(
-                              horizontal: 10, vertical: 5),
-                          decoration: BoxDecoration(
-                            border: Border.all(color: mainColor),
-                            borderRadius: const BorderRadius.all(
-                              Radius.circular(15),
+                          const SizedBox(height: 10),
+                          GestureDetector(
+                            onTap: () => timePicker(
+                              context: context,
+                              selectedDate: _endDate,
+                              isStart: false,
+                            ),
+                            child: Container(
+                              padding: const EdgeInsets.symmetric(
+                                  horizontal: 10, vertical: 5),
+                              decoration: BoxDecoration(
+                                border: Border.all(color: mainColor),
+                                borderRadius: const BorderRadius.all(
+                                  Radius.circular(15),
+                                ),
+                              ),
+                              child: Text(
+                                DateFormat.Hm().format(_endDate),
+                              ),
                             ),
                           ),
-                          child: Text(
-                            DateFormat.Hm().format(_endDate),
-                          ),
-                        ),
+                        ],
                       ),
                     ],
                   ),
                 ],
               ),
-            ],
+            ),
           ),
         ),
-      ),
+      ],
     );
   }
 
@@ -359,7 +382,10 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
   ///추후 공용으로 쓰이게 되면 이름 변경 가능성 있음.
   ///컨트롤러를 통한 값 연동에 대해 공부해야함.
 
-  TextField scheduleTextField({required String hintText}) {
+  TextField scheduleTextField({
+    required String hintText,
+    required TextEditingController controller,
+  }) {
     return TextField(
       cursorColor: mainColor,
       decoration: InputDecoration(
