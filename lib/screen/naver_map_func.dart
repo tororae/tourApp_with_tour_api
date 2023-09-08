@@ -10,8 +10,9 @@ import 'package:tour_with_tourapi/setting/secret.dart';
 import 'package:tour_with_tourapi/setting/theme.dart';
 import 'package:provider/provider.dart';
 
-String areaName = "";
+String areaName = ""; //동변환 주소값 담기는 변수
 
+//현재 위치 받아오기 실패시 초기화
 Position getPosition = currentPosition ??
     Position(
       latitude: 37.715133,
@@ -65,8 +66,7 @@ NaverMap naverMapTest(context) {
   );
 }
 
-//동변환 함수
-
+///좌표 동변환 함수
 Future<String> getAddress(context, position) async {
   const String apiUrl =
       "https://naveropenapi.apigw.ntruss.com/map-reversegeocode/v2/gc";
@@ -104,6 +104,7 @@ Future<String> getAddress(context, position) async {
   }
 }
 
+///지도 클릭시 팝업화면
 chkPickLocation(context, position) {
   final locationProvider = Provider.of<LocationProvider>(context);
 
@@ -153,7 +154,7 @@ chkPickLocation(context, position) {
           child: SingleChildScrollView(
             scrollDirection: Axis.horizontal,
             child: Text(
-              locationProvider.popup_location,
+              locationProvider.popupLocation,
               style: const TextStyle(
                   color: mainColor, fontWeight: FontWeight.bold),
             ),

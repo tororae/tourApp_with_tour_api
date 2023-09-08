@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
-import 'package:tour_with_tourapi/screen/naver_map_func.dart';
 
 const Color mainColor = Color(0xff693FDD);
 const Color subColor = Color(0xff523EBF);

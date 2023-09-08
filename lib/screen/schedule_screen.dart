@@ -1,8 +1,11 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import 'package:tour_with_tourapi/main.dart';
+import 'package:tour_with_tourapi/screen/get_location_base_info.dart';
 import 'package:tour_with_tourapi/screen/naver_map_func.dart';
+import 'package:tour_with_tourapi/setting/secret.dart';
 import 'package:tour_with_tourapi/setting/theme.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:intl/intl.dart';
@@ -17,6 +20,8 @@ class ScheduleScreen extends StatefulWidget {
 DateTime _temporaryDate = DateTime.now();
 
 class _ScheduleScreenState extends State<ScheduleScreen> {
+  final TextEditingController _searchRangeController = TextEditingController();
+
   DateTime _startDate = DateTime.now();
   DateTime _endDate = DateTime.now();
 
@@ -65,16 +70,16 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
   @override
   Widget build(BuildContext context) {
     final locationProvider = Provider.of<LocationProvider>(context);
-    TextEditingController _searchRangeController =
-        TextEditingController(); //검색범위 설정용 변수
+    //검색범위 설정용 변수
     return Stack(
       children: [
-        Image(
-          height: MediaQuery.of(context).size.height,
-          image: const AssetImage(
-            "lib/assets/background.jpg",
+        const Positioned.fill(
+          child: Image(
+            image: AssetImage(
+              "lib/assets/background.jpg",
+            ),
+            fit: BoxFit.cover,
           ),
-          fit: BoxFit.cover,
         ),
         Center(
           child: Padding(
@@ -127,6 +132,7 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
                   const SizedBox(height: 20),
                   scheduleTitleText(titleText: "검색 범위를 선택해주세요.\n(미터 단위)"),
                   const SizedBox(height: 10),
+
                   scheduleTextField(
                       hintText: "1000", controller: _searchRangeController),
                   const SizedBox(height: 20),
@@ -261,6 +267,41 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
                       ),
                     ],
                   ),
+                  const SizedBox(height: 25),
+
+                  GestureDetector(
+                    onTap: () {
+                      if (_searchRangeController.text == "") {
+                        _searchRangeController.text = "1000";
+                      }
+                      debugPrint(
+                          "경도 : ${currentPosition?.longitude},위도 : ${currentPosition?.latitude}, ${_searchRangeController.text}범위로 검색.");
+                      debugPrint(
+                          "출발시간 : ${_startDate.year}년 ${_startDate.month}월 ${_startDate.day}일\n${_startDate.hour}시 ${_startDate.minute}분");
+                      debugPrint(
+                          "출발시간 : ${_endDate.year}년 ${_endDate.month}월 ${_endDate.day}일\n${_endDate.hour}시 ${_endDate.minute}분");
+                      String url =
+                          "$tourApiMainUrl$locationBased$tourApiKey${numOfRows}1000${pageNo}1$others$arrange $mapX${currentPosition?.longitude}$mapY${currentPosition?.latitude}$radius${_searchRangeController.text}";
+                      debugPrint(url);
+                      getLocationBasedData(url);
+                    },
+                    child: Center(
+                      child: Container(
+                        padding: const EdgeInsets.all(15),
+                        decoration: BoxDecoration(
+                          color: mainColor,
+                          borderRadius: BorderRadius.circular(5),
+                        ),
+                        child: const Text(
+                          '추천여행지 목록보기',
+                          style: TextStyle(
+                            color: Colors.white,
+                          ),
+                          textAlign: TextAlign.center,
+                        ),
+                      ),
+                    ),
+                  ),
                 ],
               ),
             ),
@@ -379,14 +420,15 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
   }
 
   ///스케쥴 화면에서 텍스트를 입력받는 컴포넌트.
-  ///추후 공용으로 쓰이게 되면 이름 변경 가능성 있음.
-  ///컨트롤러를 통한 값 연동에 대해 공부해야함.
 
   TextField scheduleTextField({
     required String hintText,
     required TextEditingController controller,
   }) {
     return TextField(
+      keyboardType: TextInputType.number, //숫자키보드
+      inputFormatters: [FilteringTextInputFormatter.digitsOnly], //오직 숫자입력
+      controller: controller,
       cursorColor: mainColor,
       decoration: InputDecoration(
         hintText: hintText,

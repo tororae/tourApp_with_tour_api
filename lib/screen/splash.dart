@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:tour_with_tourapi/screen/main_screen.dart';
+import 'package:tour_with_tourapi/screen/test_screen.dart';
 import 'package:tour_with_tourapi/setting/theme.dart';
 
 bool _isSplashClicked = false;
@@ -56,11 +57,13 @@ class SplashScreen extends StatelessWidget {
               end: Alignment.bottomCenter,
             ),
           ),
-          width: MediaQuery.of(context).size.width,
-          height: MediaQuery.of(context).size.height,
+          // width: MediaQuery.of(context).size.width,
+          // height: MediaQuery.of(context).size.height,
           child: const Image(
             image: AssetImage("lib/assets/splash.png"),
             fit: BoxFit.fitHeight,
+            width: double.infinity, // 화면 가로 길이만큼 확장
+            height: double.infinity, // 화면 세로 길이만큼 확장
           ),
         ),
       ),

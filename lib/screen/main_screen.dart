@@ -17,6 +17,8 @@ List navigationItems = <Widget>[
   const ScreenNotice(pageInfo: "내 설정 화면은 개발 진행중입니다."),
 ];
 
+bool _isInitialized = false; // 최초 실행 여부를 나타내는 변수
+
 class MainScreen extends StatefulWidget {
   const MainScreen({super.key});
 
@@ -25,26 +27,31 @@ class MainScreen extends StatefulWidget {
 }
 
 class _MainScreenState extends State<MainScreen> {
-  int _selectedIndex = 0;
+  int _selectedIndex = 1;
 
   int page = 1;
   @override
   void initState() {
     super.initState();
     debugPrint("권한요청 간다.");
-    final locationProvider =
-        Provider.of<LocationProvider>(context, listen: false);
+    debugPrint("초기화 여부 : $_isInitialized.");
 
-    //이를 통해서 내 현재위치를 스케쥴로 전달.
-    getCurrentLocation(context).then(
-      (value) {
-        //현재 위치에 값 저장.
-        currentPosition = value;
-        //포지션의 위도경도 주소로 변환 후 받아서 프로바이더에 전달.
-        getAddress(context, "${value.longitude},${value.latitude}")
-            .then((value) => locationProvider.updateText(value));
-      },
-    );
+    if (!_isInitialized) {
+      final locationProvider =
+          Provider.of<LocationProvider>(context, listen: false);
+
+      //이를 통해서 내 현재위치를 스케쥴로 전달.
+      getCurrentLocation(context).then(
+        (value) {
+          //현재 위치에 값 저장.
+          currentPosition = value;
+          //포지션의 위도경도 주소로 변환 후 받아서 프로바이더에 전달.
+          getAddress(context, "${value.longitude},${value.latitude}")
+              .then((value) => locationProvider.updateText(value));
+        },
+      );
+      _isInitialized = true; // 최초 실행 후 변수 값을 변경하여 다음에는 실행되지 않도록 함
+    }
   }
 
   // final ScrollController _scrollController = ScrollController();
@@ -134,9 +141,13 @@ final class ScreenNotice extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Center(
-        child: Text(
-      pageInfo,
-      style: const TextStyle(color: mainColor, fontSize: 30),
+        child: Column(
+      children: [
+        Text(
+          pageInfo,
+          style: const TextStyle(color: mainColor, fontSize: 30),
+        ),
+      ],
     ));
   }
 }

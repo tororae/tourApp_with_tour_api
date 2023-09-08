@@ -6,11 +6,11 @@ import 'package:flutter_naver_map/flutter_naver_map.dart';
 import 'package:tour_with_tourapi/setting/secret.dart';
 
 class LocationProvider with ChangeNotifier {
-  String _popup_location = "";
+  String _popupLocation = "";
   String _text = "위치정보가 없습니다.";
 
   String get text => _text;
-  String get popup_location => _popup_location;
+  String get popupLocation => _popupLocation;
 
   void updateText(String newText) {
     debugPrint("$newText를 받아왔습니다. $_text를 변경합니다.");
@@ -19,8 +19,8 @@ class LocationProvider with ChangeNotifier {
   }
 
   void updatePopupText(String newText) {
-    debugPrint("$newText를 받아왔습니다. $_popup_location를 변경합니다.");
-    _popup_location = newText;
+    debugPrint("$newText를 받아왔습니다. $_popupLocation 변경합니다.");
+    _popupLocation = newText;
     notifyListeners();
   }
 }
