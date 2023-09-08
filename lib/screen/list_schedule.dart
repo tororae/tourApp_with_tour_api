@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:tour_with_tourapi/screen/get_location_base_info.dart';
 import 'package:tour_with_tourapi/setting/theme.dart';
+import 'package:loading_animation_widget/loading_animation_widget.dart';
 
 class ScheduleList extends StatefulWidget {
   final String apiUrl;
@@ -12,6 +13,8 @@ class ScheduleList extends StatefulWidget {
 }
 
 class _ScheduleListState extends State<ScheduleList> {
+  bool _isProgressing = false;
+
   ///initState는 최초 한번만 선언되서 새로고침이 안되서 우선 제외.
   ///
 
@@ -35,10 +38,12 @@ class _ScheduleListState extends State<ScheduleList> {
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
+    _isProgressing = true;
     // 이전 화면에서 돌아올 때마다 데이터를 다시 불러오고 화면을 갱신합니다.
     getLocationBasedData(widget.apiUrl).then(
       (value) {
         setState(() {
+          _isProgressing = false;
           debugPrint("${widget.apiUrl}을 통한 호출 완료!!!!!!!!!");
         });
       },
@@ -48,44 +53,66 @@ class _ScheduleListState extends State<ScheduleList> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: locationList.isEmpty
+      body: _isProgressing
           ? Center(
-              // 데이터가 없는 경우 표시할 위젯
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   const Text(
-                    "해당 조건에 맞는 결과가 없습니다.",
-                    style: TextStyle(color: mainColor),
+                    "목록을 불러오고 있어요!!",
+                    style: TextStyle(
+                        color: mainColor,
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold),
                   ),
                   const SizedBox(
-                    height: 30,
+                    height: 10,
                   ),
-                  GestureDetector(
-                    onTap: () {
-                      Navigator.pop(context);
-                    },
-                    child: Center(
-                      child: Container(
-                        padding: const EdgeInsets.all(15),
-                        decoration: BoxDecoration(
-                          color: mainColor,
-                          borderRadius: BorderRadius.circular(5),
-                        ),
-                        child: const Text(
-                          '이전 페이지로 돌아가기',
-                          style: TextStyle(
-                            color: Colors.white,
-                          ),
-                          textAlign: TextAlign.center,
-                        ),
-                      ),
-                    ),
+                  LoadingAnimationWidget.horizontalRotatingDots(
+                    color: mainColor,
+                    size: 150,
                   ),
                 ],
               ),
             )
-          : TourSpotList(),
+          : locationList.isEmpty
+              ? Center(
+                  // 데이터가 없는 경우 표시할 위젯
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      const Text(
+                        "해당 조건에 맞는 결과가 없습니다.",
+                        style: TextStyle(color: mainColor),
+                      ),
+                      const SizedBox(
+                        height: 30,
+                      ),
+                      GestureDetector(
+                        onTap: () {
+                          Navigator.pop(context);
+                        },
+                        child: Center(
+                          child: Container(
+                            padding: const EdgeInsets.all(15),
+                            decoration: BoxDecoration(
+                              color: mainColor,
+                              borderRadius: BorderRadius.circular(5),
+                            ),
+                            child: const Text(
+                              '이전 페이지로 돌아가기',
+                              style: TextStyle(
+                                color: Colors.white,
+                              ),
+                              textAlign: TextAlign.center,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                )
+              : TourSpotList(),
     );
   }
 }
