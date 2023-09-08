@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:tour_with_tourapi/screen/main_screen.dart';
-import 'package:tour_with_tourapi/screen/test_screen.dart';
 import 'package:tour_with_tourapi/setting/theme.dart';
 
 bool _isSplashClicked = false;

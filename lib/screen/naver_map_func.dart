@@ -55,6 +55,16 @@ NaverMap naverMapTest(context) {
     onMapTapped: (point, latLng) {
       // Navigator.pop(context);
       debugPrint("${latLng.latitude}、${latLng.longitude}");
+      getPosition = Position(
+          longitude: latLng.longitude,
+          latitude: latLng.latitude,
+          timestamp: getPosition.timestamp,
+          accuracy: getPosition.accuracy,
+          altitude: getPosition.altitude,
+          heading: getPosition.heading,
+          speed: getPosition.speed,
+          speedAccuracy: getPosition.speedAccuracy);
+
       getAddress(context, "${latLng.longitude},${latLng.latitude}");
       showDialog(
         context: context,
@@ -167,6 +177,9 @@ chkPickLocation(context, position) {
           onTap: () {
             Navigator.pop(context);
             Navigator.pop(context);
+            currentPosition = position;
+            debugPrint(
+                "..\n${position.latitude},${position.longitude} 대입 완료\n..");
             locationProvider.updateText(areaName);
           },
           child: Container(

@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import 'package:tour_with_tourapi/main.dart';
-import 'package:tour_with_tourapi/screen/get_location_base_info.dart';
+import 'package:tour_with_tourapi/screen/list_schedule.dart';
 import 'package:tour_with_tourapi/screen/naver_map_func.dart';
 import 'package:tour_with_tourapi/setting/secret.dart';
 import 'package:tour_with_tourapi/setting/theme.dart';
@@ -97,6 +97,7 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
                   // const SizedBox(height: 10),
                   // scheduleTextField(hintText: "힐링/벚꽃놀이/산책"),
                   // const SizedBox(height: 20),
+
                   scheduleTitleText(titleText: "어떤 지역을 여행하나요?"),
                   const SizedBox(height: 10),
                   const Text(
@@ -283,7 +284,13 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
                       String url =
                           "$tourApiMainUrl$locationBased$tourApiKey${numOfRows}1000${pageNo}1$others$arrange $mapX${currentPosition?.longitude}$mapY${currentPosition?.latitude}$radius${_searchRangeController.text}";
                       debugPrint(url);
-                      getLocationBasedData(url);
+                      // getLocationBasedData(url);
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => ScheduleList(apiUrl: url),
+                        ),
+                      );
                     },
                     child: Center(
                       child: Container(
