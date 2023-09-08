@@ -97,16 +97,21 @@ Future<String> getAddress(context, position) async {
   if (response.statusCode == 200) {
     // JSON 응답 파싱
     final Map<String, dynamic> data = json.decode(response.body);
-    debugPrint("Response Data: $data");
-
-    final area = data["results"][0]["region"];
-    areaName =
-        "${area["area1"]["name"]} ${area["area2"]["name"]} ${area["area3"]["name"]} ${area["area4"]["name"]}";
-    debugPrint("$areaName은 출력됨.");
     final locationProvider =
         Provider.of<LocationProvider>(context, listen: false);
-    locationProvider.updatePopupText(areaName);
-    return areaName;
+    if (data["status"]["code"] == 0) {
+      final area = data["results"][0]["region"];
+      areaName =
+          "${area["area1"]["name"]} ${area["area2"]["name"]} ${area["area3"]["name"]} ${area["area4"]["name"]}";
+      debugPrint("$areaName은 출력됨.");
+
+      locationProvider.updatePopupText(areaName);
+      return areaName;
+    } else {
+      locationProvider.updatePopupText("주소가 없는 장소에요");
+
+      return "주소가 없는 장소에요";
+    }
   } else {
     // 요청 실패 처리
     debugPrint("Failed to load data: ${response.statusCode}");
