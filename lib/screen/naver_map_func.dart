@@ -185,7 +185,7 @@ chkPickLocation(context, position) {
             currentPosition = position;
             debugPrint(
                 "..\n${position.latitude},${position.longitude} 대입 완료\n..");
-            locationProvider.updateText(areaName);
+            locationProvider.updateText(locationProvider.popupLocation);
           },
           child: Container(
             width: MediaQuery.of(context).size.width * 0.8,

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:tour_with_tourapi/screen/get_location_base_info.dart';
+import 'package:tour_with_tourapi/setting/theme.dart';
 
 class ScheduleList extends StatefulWidget {
   final String apiUrl;
@@ -39,7 +40,6 @@ class _ScheduleListState extends State<ScheduleList> {
       (value) {
         setState(() {
           debugPrint("${widget.apiUrl}을 통한 호출 완료!!!!!!!!!");
-          debugPrint("${locationList[0].imageUrl}이미지 주소.");
         });
       },
     );
@@ -48,47 +48,94 @@ class _ScheduleListState extends State<ScheduleList> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: ListView.builder(
-        itemCount: locationList.length,
-        itemBuilder: (BuildContext context, int index) {
-          debugPrint(
-              "$index 번째 이미지 주소 :\n${locationList[index].imageUrl} ...!!");
-
-          return Card(
-            elevation: 2.0, // 그림자 효과 추가 (선택 사항)
-            margin: const EdgeInsets.all(8.0), // 카드 주위의 여백 (선택 사항)
-            child: Padding(
-              padding: const EdgeInsets.all(16.0), // 내용 주위의 여백 (선택 사항)
+      body: locationList.isEmpty
+          ? Center(
+              // 데이터가 없는 경우 표시할 위젯
               child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Text(
-                    locationList[index].title,
-                    style: const TextStyle(
-                      fontSize: 20.0,
-                      fontWeight: FontWeight.bold,
-                    ),
+                  const Text(
+                    "해당 조건에 맞는 결과가 없습니다.",
+                    style: TextStyle(color: mainColor),
                   ),
-                  Text(
-                    locationList[index].address,
-                    style: const TextStyle(
-                      fontSize: 16.0,
-                    ),
+                  const SizedBox(
+                    height: 30,
                   ),
-                  Image.network(
-                    locationList[index].imageUrl,
-                    errorBuilder: (BuildContext context, Object exception,
-                        StackTrace? stackTrace) {
-                      // 에러 처리 로직을 여기에 구현
-                      return const Text('이미지 엄쪄.');
+                  GestureDetector(
+                    onTap: () {
+                      Navigator.pop(context);
                     },
+                    child: Center(
+                      child: Container(
+                        padding: const EdgeInsets.all(15),
+                        decoration: BoxDecoration(
+                          color: mainColor,
+                          borderRadius: BorderRadius.circular(5),
+                        ),
+                        child: const Text(
+                          '이전 페이지로 돌아가기',
+                          style: TextStyle(
+                            color: Colors.white,
+                          ),
+                          textAlign: TextAlign.center,
+                        ),
+                      ),
+                    ),
                   ),
                 ],
               ),
+            )
+          : TourSpotList(),
+    );
+  }
+}
+
+class TourSpotList extends StatelessWidget {
+  const TourSpotList({
+    super.key,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return ListView.builder(
+      itemCount: locationList.length,
+      itemBuilder: (BuildContext context, int index) {
+        debugPrint("$index 번째 이미지 주소 :\n${locationList[index].imageUrl} ...!!");
+
+        return Card(
+          elevation: 2.0, // 그림자 효과 추가 (선택 사항)
+          margin: const EdgeInsets.all(8.0), // 카드 주위의 여백 (선택 사항)
+          child: Padding(
+            padding: const EdgeInsets.all(16.0), // 내용 주위의 여백 (선택 사항)
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  locationList[index].title,
+                  style: const TextStyle(
+                    fontSize: 20.0,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                Text(
+                  locationList[index].address,
+                  style: const TextStyle(
+                    fontSize: 16.0,
+                  ),
+                ),
+                Image.network(
+                  locationList[index].imageUrl,
+                  errorBuilder: (BuildContext context, Object exception,
+                      StackTrace? stackTrace) {
+                    // 에러 처리 로직을 여기에 구현
+                    return const Text('이미지 엄쪄.');
+                  },
+                ),
+              ],
             ),
-          );
-        },
-      ),
+          ),
+        );
+      },
     );
   }
 }

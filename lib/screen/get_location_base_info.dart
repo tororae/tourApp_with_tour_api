@@ -21,17 +21,25 @@ class LocationData {
 Future<void> getLocationBasedData(apiUrl) async {
   final response = await http.get(Uri.parse(apiUrl));
   locationList.clear(); //리스트를 초기화하고 다시 로딩하기 위함.
-
+  debugPrint("----------지역기반 관광지 호출결과");
+  debugPrint("----------지역기반 관광지 호출결과\n$response");
   if (response.statusCode == 200) {
     // 요청이 성공하면 JSON 데이터를 파싱하여 data 변수에 저장
+
     final jsonData = json.decode(utf8.decode(response.bodyBytes)); // 인코딩 처리
-    final items = jsonData['response']['body']['items']['item'];
-    for (var item in items) {
-      locationList.add(LocationData(
-        title: item['title'],
-        address: item['addr1'],
-        imageUrl: item['firstimage'],
-      ));
+
+    if (jsonData['response']['body']["numOfRows"] == 0) {
+      // 검색 결과가 없는 경우
+    } else {
+      final items = jsonData['response']['body']['items']['item'];
+
+      for (var item in items) {
+        locationList.add(LocationData(
+          title: item['title'],
+          address: item['addr1'],
+          imageUrl: item['firstimage'],
+        ));
+      }
     }
   } else {
     // 요청이 실패하면 오류를 출력
