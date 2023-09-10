@@ -1,10 +1,9 @@
+///위치 기반 정보호출을 위한 클래스 선언
+
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
-
-// const String apiUrl =
-//     "https://apis.data.go.kr/B551011/KorService1/locationBasedList1?serviceKey=p7lOrWvzLtnkrtjd%2Bq8KlJxffMsCCQQpgjq9o8Hi7Lo8aZrtnjYn9vPepxCYPudDUPTtGbQfsjfBI%2BAmSAx4lQ%3D%3D&numOfRows=20&pageNo=1&MobileOS=ETC&MobileApp=AppTest&_type=json&listYN=Y&arrange=A&mapX=126.981611&mapY=37.568477&radius=1000";
 
 List<dynamic> locationList = [];
 
@@ -12,9 +11,22 @@ class LocationData {
   final String title;
   final String address;
   final String imageUrl;
+  final double dist;
+  final double mapX;
+  final double mapY;
+  final String contentId;
+  final String contentTypeId;
 
-  LocationData(
-      {required this.title, required this.address, required this.imageUrl});
+  LocationData({
+    required this.title,
+    required this.address,
+    required this.imageUrl,
+    required this.dist,
+    required this.mapX,
+    required this.mapY,
+    required this.contentId,
+    required this.contentTypeId,
+  });
 }
 
 // HTTP GET 요청을 수행하고 데이터를 가져오는 함수
@@ -34,11 +46,20 @@ Future<void> getLocationBasedData(apiUrl) async {
       final items = jsonData['response']['body']['items']['item'];
 
       for (var item in items) {
-        locationList.add(LocationData(
-          title: item['title'],
-          address: item['addr1'],
-          imageUrl: item['firstimage'],
-        ));
+        locationList.add(
+          LocationData(
+            title: item['title'],
+            address: item['addr1'],
+            imageUrl: item['firstimage'],
+            contentId: item['contentid'] ?? "",
+            contentTypeId: item['contenttypeid'] ?? "",
+            dist: double.parse(item['dist']),
+            mapX: double.parse(item['mapx'] ?? "0"),
+            mapY: double.parse(item['mapy'] ?? "0"),
+          ),
+        );
+        debugPrint(
+            "${item['title']},${item['addr1']},${item['contentid']},${item['contenttypeid']},${item['dist']},${item['mapx']},${item['mapy']},");
       }
     }
   } else {

@@ -25,7 +25,7 @@ Position getPosition = currentPosition ??
       speedAccuracy: 0,
     );
 
-NaverMap naverMapTest(context) {
+NaverMap naverMapCall(context) {
   getPosition = currentPosition ??
       Position(
         latitude: 37.715133,
