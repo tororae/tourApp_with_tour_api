@@ -3,6 +3,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:tour_with_tourapi/screen/get_location_base_info.dart';
+import 'package:tour_with_tourapi/setting/secret.dart';
 import 'package:tour_with_tourapi/setting/theme.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
 
@@ -129,6 +130,10 @@ class _ScheduleListState extends State<ScheduleList> {
   }
 }
 
+//API 호출을 위한 ID들 변수할당
+String contentIdValue = "";
+String contentTypeIdValue = "";
+
 class TourSpotList extends StatelessWidget {
   const TourSpotList({
     super.key,
@@ -141,12 +146,20 @@ class TourSpotList extends StatelessWidget {
       itemBuilder: (BuildContext context, int index) {
         return InkWell(
           onTap: () {
+            contentIdValue = locationList[index].contentId;
+            contentTypeIdValue = locationList[index].contentTypeId;
+
             showDialog(
               context: context,
               builder: (context) {
-                return Dialog(
-                    elevation: 20,
-                    child: Text("${locationList[index].title}를 누르셨어요잉.."));
+                return DetailInfoDialog(
+                  address: locationList[index].address,
+                  mapX: locationList[index].mapX,
+                  mapY: locationList[index].mapY,
+                  title: locationList[index].title,
+                  imageUrl: locationList[index].imageUrl,
+                  key: key,
+                );
               },
             );
           },
@@ -217,6 +230,69 @@ class TourSpotList extends StatelessWidget {
           ),
         );
       },
+    );
+  }
+}
+
+//상세정보 반환
+class DetailInfoDialog extends StatefulWidget {
+  final String title;
+  final String address;
+  final double mapX;
+  final double mapY;
+  final String imageUrl;
+  const DetailInfoDialog({
+    required this.title,
+    super.key,
+    required this.address,
+    required this.mapX,
+    required this.mapY,
+    required this.imageUrl,
+  });
+
+  @override
+  State<DetailInfoDialog> createState() => _DetailInfoDialogState();
+}
+
+class _DetailInfoDialogState extends State<DetailInfoDialog> {
+  String detailInfoText = "";
+  final String infoURL =
+      "$tourApiMainUrl$detailInfoBeforeKey$tourApiKey$detailInfoAfterKey$contentId$contentIdValue$contentTypeId$contentTypeIdValue$detailInfoLast";
+  @override
+  void initState() {
+    // TODO: implement initState
+    debugPrint(infoURL);
+    getDetailInfo(infoURL).then(
+      (value) {
+        setState(() {
+          detailInfoText = value;
+        });
+      },
+    );
+
+    super.initState();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Dialog(
+      elevation: 20,
+      child: SingleChildScrollView(
+        child: Column(
+          children: [
+            Text("${widget.title}"),
+            Image.network(
+              widget.imageUrl,
+              errorBuilder: (BuildContext context, Object exception,
+                  StackTrace? stackTrace) {
+                // 에러 처리 로직을 여기에 구현
+                return const Text('이미지 엄쪄.');
+              },
+            ),
+            Text(detailInfoText),
+          ],
+        ),
+      ),
     );
   }
 }
