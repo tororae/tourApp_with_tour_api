@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
 List<dynamic> locationList = [];
+bool isInfoLoading = false;
 
 class LocationData {
   final String title;
@@ -72,25 +73,37 @@ Future<void> getLocationBasedData(apiUrl) async {
 ///지역의 구체적 정보를 가져올거임.
 // HTTP GET 요청을 수행하고 데이터를 가져오는 함수
 Future<String> getDetailInfo(apiUrl) async {
-  final response = await http.get(Uri.parse(apiUrl));
-  if (response.statusCode == 200) {
-    // 요청이 성공하면 JSON 데이터를 파싱하여 data 변수에 저장
+  try {
+    debugPrint("요청해쪔.. $apiUrl");
 
-    final jsonData = json.decode(utf8.decode(response.bodyBytes)); // 인코딩 처리
+    final response = await http.get(Uri.parse(apiUrl));
+    debugPrint("불러와쪔.");
 
-    if (jsonData['response']['body']["numOfRows"] == 0) {
-      // 검색 결과가 없는 경우
-      return "상세정보가 없습니다.";
+    if (response.statusCode == 200) {
+      // 요청이 성공하면 JSON 데이터를 파싱하여 data 변수에 저장
+      isInfoLoading = false;
+
+      final jsonData = json.decode(utf8.decode(response.bodyBytes)); // 인코딩 처리
+
+      if (jsonData['response']['body']["numOfRows"] == 0) {
+        // 검색 결과가 없는 경우
+        return "상세정보가 없습니다.";
+      } else {
+        final value =
+            jsonData['response']['body']['items']['item'][0]['overview']
+                .replaceAll('<br />', '\n') // <br> 태그를 줄 바꿈 문자로 대체
+                .replaceAll(RegExp(r'<[^>]*>'), ''); // HTML 태그 제거;
+        debugPrint("상세정보 ----- \n$value");
+        return value;
+      }
     } else {
-      final value = jsonData['response']['body']['items']['item'][0]['overview']
-          .replaceAll('<br>', '\n') // <br> 태그를 줄 바꿈 문자로 대체
-          .replaceAll(RegExp(r'<[^>]*>'), ''); // HTML 태그 제거;
-      debugPrint("상세정보 ----- \n$value");
-      return value;
+      // 요청이 실패하면 오류를 출력
+      return "상세정보를 불러오는데 실패했습니다.";
+      // throw Exception('Failed to load data');
     }
-  } else {
-    // 요청이 실패하면 오류를 출력
+  } catch (e) {
+    debugPrint("예외갔쪔.");
+
     return "상세정보를 불러오는데 실패했습니다.";
-    // throw Exception('Failed to load data');
   }
 }

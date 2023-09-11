@@ -25,6 +25,7 @@ Position getPosition = currentPosition ??
       speedAccuracy: 0,
     );
 
+//목록에서 지도 호출시
 NaverMap naverMapCall(context) {
   getPosition = currentPosition ??
       Position(
@@ -72,6 +73,43 @@ NaverMap naverMapCall(context) {
           return chkPickLocation(context, getPosition);
         },
       );
+    },
+  );
+}
+
+//상세정보에서 마커로 찍은 내 목적지 확인용
+NaverMap naverMapCallJustSee({required double mapX, required double mapY}) {
+  // map X가 경도, map Y가 위도.
+  getPosition = Position(
+    latitude: mapY,
+    longitude: mapX,
+    timestamp: DateTime.timestamp(),
+    accuracy: 15.163000106811523,
+    altitude: 34.30000305175781,
+    heading: 32.578853607177734,
+    speed: 0.12078452110290527,
+    speedAccuracy: 0,
+  );
+  final targetPlace = NMarker(
+    id: '1',
+    position: NLatLng(mapY, mapX),
+  );
+
+  debugPrint("위도 : ${getPosition.latitude}, 경도 : ${getPosition.longitude}");
+  return NaverMap(
+    options: NaverMapViewOptions(
+      initialCameraPosition: NCameraPosition(
+        target: NLatLng(getPosition.latitude, getPosition.longitude),
+        zoom: 15,
+        bearing: 0,
+        tilt: 0,
+      ),
+      mapType: NMapType.basic,
+      activeLayerGroups: [NLayerGroup.building, NLayerGroup.transit],
+    ),
+    onMapReady: (myMapController) {
+      debugPrint("네이버 맵 로딩됨!");
+      myMapController.addOverlay(targetPlace);
     },
   );
 }

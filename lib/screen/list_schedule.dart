@@ -2,7 +2,10 @@
 ///
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:tour_with_tourapi/screen/get_location_base_info.dart';
+import 'package:tour_with_tourapi/screen/naver_map_func.dart';
 import 'package:tour_with_tourapi/setting/secret.dart';
 import 'package:tour_with_tourapi/setting/theme.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
@@ -24,7 +27,6 @@ class _ScheduleListState extends State<ScheduleList> {
 
   // @override
   // void initState() {
-  //   // TODO: implement initState
   //   super.initState();
   //   getLocationBasedData(widget.apiUrl).then(
   //     (value) {
@@ -260,13 +262,17 @@ class _DetailInfoDialogState extends State<DetailInfoDialog> {
       "$tourApiMainUrl$detailInfoBeforeKey$tourApiKey$detailInfoAfterKey$contentId$contentIdValue$contentTypeId$contentTypeIdValue$detailInfoLast";
   @override
   void initState() {
-    // TODO: implement initState
     debugPrint(infoURL);
+    isInfoLoading = true;
+
+    setState(() {});
     getDetailInfo(infoURL).then(
       (value) {
-        setState(() {
-          detailInfoText = value;
-        });
+        if (mounted) {
+          setState(() {
+            detailInfoText = value;
+          });
+        }
       },
     );
 
@@ -275,22 +281,147 @@ class _DetailInfoDialogState extends State<DetailInfoDialog> {
 
   @override
   Widget build(BuildContext context) {
+    bool isExit = false;
     return Dialog(
       elevation: 20,
-      child: SingleChildScrollView(
-        child: Column(
-          children: [
-            Text("${widget.title}"),
-            Image.network(
-              widget.imageUrl,
-              errorBuilder: (BuildContext context, Object exception,
-                  StackTrace? stackTrace) {
-                // 에러 처리 로직을 여기에 구현
-                return const Text('이미지 엄쪄.');
-              },
-            ),
-            Text(detailInfoText),
-          ],
+      child: Padding(
+        padding: const EdgeInsets.all(10.0),
+        child: SingleChildScrollView(
+          child: Column(
+            children: [
+              Text(
+                widget.title,
+                style: const TextStyle(
+                  fontSize: 25,
+                  color: mainColor,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              const SizedBox(height: 10),
+              Container(
+                clipBehavior: Clip.hardEdge,
+                decoration: BoxDecoration(
+                  border: Border.all(color: mainColor, width: 1.5),
+                  borderRadius: BorderRadius.circular(5),
+                ),
+                child: Image.network(
+                  widget.imageUrl,
+                  errorBuilder: (BuildContext context, Object exception,
+                      StackTrace? stackTrace) {
+                    // 에러 처리 로직을 여기에 구현
+                    return const Text('이미지 엄쪄.');
+                  },
+                ),
+              ),
+              const SizedBox(height: 15),
+              const SizedBox(
+                width: double.infinity,
+                child: Text(
+                  "상세설명",
+                  style: TextStyle(
+                    fontSize: 18,
+                    color: mainColor,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ),
+              const SizedBox(height: 13),
+              isInfoLoading == true
+                  ? LoadingAnimationWidget.fourRotatingDots(
+                      color: mainColor, size: 50)
+                  : Container(
+                      padding: const EdgeInsets.all(3),
+                      decoration: BoxDecoration(
+                        border: Border.all(color: mainColor, width: 1.5),
+                        borderRadius: BorderRadius.circular(5),
+                      ),
+                      height: 100,
+                      child: SingleChildScrollView(
+                        child: Text(
+                          detailInfoText,
+                        ),
+                      ),
+                    ),
+              const SizedBox(height: 5),
+              Row(
+                children: [
+                  const Text(
+                    "주소",
+                    style: TextStyle(
+                      fontSize: 18,
+                      color: mainColor,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  IconButton(
+                    icon: const Icon(
+                      size: 25,
+                      Icons.content_copy_rounded,
+                      color: mainColor,
+                    ),
+                    onPressed: () {
+                      Fluttertoast.showToast(
+                        msg: "주소를 복사하였습니다.",
+                      );
+                      Clipboard.setData(
+                        ClipboardData(text: widget.address),
+                      );
+                    },
+                  )
+                ],
+              ),
+              Container(
+                width: double.infinity,
+                padding: const EdgeInsets.all(3),
+                decoration: BoxDecoration(
+                  border: Border.all(color: mainColor, width: 1.5),
+                  borderRadius: BorderRadius.circular(5),
+                ),
+                child: Column(
+                  children: [
+                    const SizedBox(height: 5),
+                    Text(
+                      widget.address,
+                      textAlign: TextAlign.start,
+                    ),
+                    const SizedBox(height: 10),
+                    SizedBox(
+                      width: double.infinity,
+                      height: 150,
+                      child: isExit == false
+                          ? naverMapCallJustSee(
+                              mapX: widget.mapX, mapY: widget.mapY)
+                          : const SizedBox(),
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(height: 10),
+              InkWell(
+                onTap: () {
+                  isExit = true;
+                  Navigator.pop(context);
+                },
+                child: Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 20,
+                    vertical: 10,
+                  ),
+                  decoration: BoxDecoration(
+                    color: mainColor,
+                    borderRadius: BorderRadius.circular(5),
+                  ),
+                  child: const Text(
+                    '닫기',
+                    style: TextStyle(
+                      color: Colors.white,
+                    ),
+                    textAlign: TextAlign.center,
+                  ),
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );
