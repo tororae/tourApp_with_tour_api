@@ -8,6 +8,7 @@ import 'package:http/http.dart' as http;
 List<dynamic> locationList = [];
 bool isInfoLoading = false;
 
+//위치기반 정보 api 호출받아서 넣을 모델클래스 선언
 class LocationData {
   final String title;
   final String address;

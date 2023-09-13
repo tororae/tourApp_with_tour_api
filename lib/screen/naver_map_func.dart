@@ -6,6 +6,7 @@ import 'package:flutter_naver_map/flutter_naver_map.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:http/http.dart' as http;
 import 'package:tour_with_tourapi/main.dart';
+import 'package:tour_with_tourapi/screen/get_location.dart';
 import 'package:tour_with_tourapi/setting/secret.dart';
 import 'package:tour_with_tourapi/setting/theme.dart';
 import 'package:provider/provider.dart';

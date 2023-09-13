@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import 'package:tour_with_tourapi/main.dart';
+import 'package:tour_with_tourapi/screen/get_location.dart';
 import 'package:tour_with_tourapi/screen/list_schedule.dart';
 import 'package:tour_with_tourapi/screen/naver_map_func.dart';
 import 'package:tour_with_tourapi/setting/secret.dart';

@@ -3,9 +3,10 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_widget_from_html/flutter_widget_from_html.dart';
+import 'package:flutter_widget_from_html/flutter_widget_from_html.dart'; //안쓸지도 모름.
 import 'package:fluttertoast/fluttertoast.dart';
-import 'package:tour_with_tourapi/screen/get_location_base_info.dart';
+import 'package:tour_with_tourapi/screen/get_location.dart';
+import 'package:tour_with_tourapi/screen/location_base_info.dart';
 import 'package:tour_with_tourapi/screen/naver_map_func.dart';
 import 'package:tour_with_tourapi/setting/secret.dart';
 import 'package:tour_with_tourapi/setting/theme.dart';
@@ -23,24 +24,6 @@ class ScheduleList extends StatefulWidget {
 class _ScheduleListState extends State<ScheduleList> {
   bool _isProgressing = false;
 
-  ///initState는 최초 한번만 선언되서 새로고침이 안되서 우선 제외.
-  ///
-
-  // @override
-  // void initState() {
-  //   super.initState();
-  //   getLocationBasedData(widget.apiUrl).then(
-  //     (value) {
-  //       setState(
-  //         () {
-  //           debugPrint("${widget.apiUrl}을 통한 호출 완료!!!!!!!!!");
-  //           debugPrint("${locationList[0].imageUrl}이미지 주소.");
-  //         },
-  //       );
-  //     },
-  //   );
-  // }
-
   ///화면 나갔다왔을때 새로고침을 위한 didChangeDependencies 사용.
   @override
   void didChangeDependencies() {
@@ -50,6 +33,7 @@ class _ScheduleListState extends State<ScheduleList> {
     getLocationBasedData(widget.apiUrl).then(
       (value) {
         if (mounted) {
+          //화면이 없을때 setState 하면 에러남. 이를 막기 위해 mounted 되어있는지 확인하고 진행.
           setState(() {
             _isProgressing = false;
             debugPrint("${widget.apiUrl}을 통한 호출 완료!!!!!!!!!");
@@ -62,7 +46,7 @@ class _ScheduleListState extends State<ScheduleList> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: _isProgressing
+      body: _isProgressing //api 호출값 로딩 완료후 화면 호출
           ? Center(
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
@@ -152,6 +136,12 @@ class TourSpotList extends StatelessWidget {
             contentIdValue = locationList[index].contentId;
             contentTypeIdValue = locationList[index].contentTypeId;
 
+            calculateDistance(
+                latStart: currentPosition!.latitude,
+                lngStart: currentPosition!.longitude,
+                latEnd: locationList[index].mapY,
+                lngEnd: locationList[index].mapX);
+
             showDialog(
               context: context,
               builder: (context) {
@@ -223,7 +213,19 @@ class TourSpotList extends StatelessWidget {
                       errorBuilder: (BuildContext context, Object exception,
                           StackTrace? stackTrace) {
                         // 에러 처리 로직을 여기에 구현
-                        return const Text('이미지 엄쪄.');
+                        return const Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Icon(
+                              Icons.image_not_supported_outlined,
+                              color: mainColor,
+                            ),
+                            Text(
+                              'No Image',
+                              style: TextStyle(color: mainColor),
+                            ),
+                          ],
+                        );
                       },
                     ),
                   ),
@@ -282,7 +284,6 @@ class _DetailInfoDialogState extends State<DetailInfoDialog> {
 
   @override
   Widget build(BuildContext context) {
-    bool isExit = false;
     return Dialog(
       elevation: 20,
       child: Padding(
@@ -310,7 +311,19 @@ class _DetailInfoDialogState extends State<DetailInfoDialog> {
                   errorBuilder: (BuildContext context, Object exception,
                       StackTrace? stackTrace) {
                     // 에러 처리 로직을 여기에 구현
-                    return const Text('이미지 엄쪄.');
+                    return const Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Icon(
+                          Icons.image_not_supported_outlined,
+                          color: mainColor,
+                        ),
+                        Text(
+                          'No Image',
+                          style: TextStyle(color: mainColor),
+                        ),
+                      ],
+                    );
                   },
                 ),
               ),
@@ -389,18 +402,15 @@ class _DetailInfoDialogState extends State<DetailInfoDialog> {
                     SizedBox(
                       width: double.infinity,
                       height: 150,
-                      child: isExit == false
-                          ? naverMapCallJustSee(
-                              mapX: widget.mapX, mapY: widget.mapY)
-                          : const SizedBox(),
-                    ),
+                      child: naverMapCallJustSee(
+                          mapX: widget.mapX, mapY: widget.mapY),
+                    )
                   ],
                 ),
               ),
               const SizedBox(height: 10),
               InkWell(
-                onTap: () {
-                  isExit = true;
+                onTap: () async {
                   Navigator.pop(context);
                 },
                 child: Container(

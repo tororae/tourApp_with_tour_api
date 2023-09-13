@@ -5,6 +5,7 @@ import 'package:flutter/services.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:provider/provider.dart';
 import 'package:tour_with_tourapi/main.dart';
+import 'package:tour_with_tourapi/screen/get_location.dart';
 import 'package:tour_with_tourapi/screen/naver_map_func.dart';
 import 'package:tour_with_tourapi/screen/schedule_screen.dart';
 import 'package:tour_with_tourapi/setting/theme.dart';
