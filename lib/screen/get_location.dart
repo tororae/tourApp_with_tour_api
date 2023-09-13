@@ -42,7 +42,7 @@ Future<Position> getCurrentLocation(context) async {
 /// 좌표를 통한 거리 계산 함수
 ///
 ///
-void calculateDistance({
+String calculateDistance({
   required double latStart,
   required double lngStart,
   required double latEnd,
@@ -61,4 +61,5 @@ void calculateDistance({
       "$latStart,$lngStart 그리고 $latEnd, $lngEnd로 간다.!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
 
   debugPrint("${(z).toStringAsFixed(3)} km");
+  return (z).toStringAsFixed(3);
 }

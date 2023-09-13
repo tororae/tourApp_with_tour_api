@@ -43,6 +43,7 @@ class _ScheduleListState extends State<ScheduleList> {
     );
   }
 
+  TextEditingController _promptText = TextEditingController();
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -110,6 +111,59 @@ class _ScheduleListState extends State<ScheduleList> {
                     children: [
                       Text("${locationList.length}개의 검색결과가 있습니다."),
                       const Expanded(child: TourSpotList()),
+                      Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Row(
+                          children: [
+                            Expanded(
+                              child: TextField(
+                                maxLines: 3,
+                                minLines: 1,
+                                cursorColor: mainColor,
+                                decoration: InputDecoration(
+                                  hintText: "멋진 여행 계획을 짜줘.",
+                                  enabledBorder: OutlineInputBorder(
+                                    borderSide:
+                                        const BorderSide(color: mainColor),
+                                    borderRadius: BorderRadius.circular(10),
+                                  ),
+                                  focusedBorder: OutlineInputBorder(
+                                    borderSide:
+                                        const BorderSide(color: mainColor),
+                                    borderRadius: BorderRadius.circular(10),
+                                  ),
+                                ),
+                                controller: _promptText,
+                              ),
+                            ),
+                            const SizedBox(
+                              width: 5,
+                            ),
+                            InkWell(
+                              onTap: () async {
+                                ///챗 지피티 호출 기능 구현예정
+                              },
+                              child: Container(
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 10,
+                                  vertical: 15,
+                                ),
+                                decoration: BoxDecoration(
+                                  color: mainColor,
+                                  borderRadius: BorderRadius.circular(5),
+                                ),
+                                child: const Text(
+                                  '여행일정 요청',
+                                  style: TextStyle(
+                                    color: Colors.white,
+                                  ),
+                                  textAlign: TextAlign.center,
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
                     ],
                   ),
                 ),
