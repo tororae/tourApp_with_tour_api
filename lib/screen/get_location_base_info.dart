@@ -77,7 +77,6 @@ Future<String> getDetailInfo(apiUrl) async {
     debugPrint("요청해쪔.. $apiUrl");
 
     final response = await http.get(Uri.parse(apiUrl));
-    debugPrint("불러와쪔.");
 
     if (response.statusCode == 200) {
       // 요청이 성공하면 JSON 데이터를 파싱하여 data 변수에 저장
@@ -90,9 +89,9 @@ Future<String> getDetailInfo(apiUrl) async {
         return "상세정보가 없습니다.";
       } else {
         final value =
-            jsonData['response']['body']['items']['item'][0]['overview']
-                .replaceAll('<br />', '\n') // <br> 태그를 줄 바꿈 문자로 대체
-                .replaceAll(RegExp(r'<[^>]*>'), ''); // HTML 태그 제거;
+            jsonData['response']['body']['items']['item'][0]['overview'];
+        // .replaceAll('<br />', '\n'); // <br> 태그를 줄 바꿈 문자로 대체
+        // .replaceAll(RegExp(r'<[^>]*>'), ''); // HTML 태그 제거;
         debugPrint("상세정보 ----- \n$value");
         return value;
       }

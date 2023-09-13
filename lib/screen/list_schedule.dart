@@ -3,6 +3,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_widget_from_html/flutter_widget_from_html.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:tour_with_tourapi/screen/get_location_base_info.dart';
 import 'package:tour_with_tourapi/screen/naver_map_func.dart';
@@ -337,7 +338,7 @@ class _DetailInfoDialogState extends State<DetailInfoDialog> {
                       ),
                       height: 100,
                       child: SingleChildScrollView(
-                        child: Text(
+                        child: HtmlWidget(
                           detailInfoText,
                         ),
                       ),

@@ -34,7 +34,7 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
         }
         Navigator.pop(context, 'OK');
       } else {
-        if (_temporaryDate.difference(_startDate).inDays >= 1) {
+        if (_temporaryDate.difference(_startDate).inDays >= 0) {
           _endDate = _temporaryDate;
           Navigator.pop(context, 'OK');
         } else {
@@ -55,7 +55,7 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
         }
         Navigator.pop(context, 'OK');
       } else {
-        if (_temporaryDate.difference(_startDate).inMinutes >= 1) {
+        if (_temporaryDate.difference(_startDate).inMinutes >= 0) {
           _endDate = _temporaryDate;
           Navigator.pop(context, 'OK');
         } else {
