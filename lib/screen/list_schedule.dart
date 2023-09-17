@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_widget_from_html/flutter_widget_from_html.dart'; //안쓸지도 모름.
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:intl/intl.dart';
 import 'package:tour_with_tourapi/screen/get_location.dart';
 import 'package:tour_with_tourapi/screen/location_base_info.dart';
 import 'package:tour_with_tourapi/screen/naver_map_func.dart';
@@ -14,8 +15,14 @@ import 'package:loading_animation_widget/loading_animation_widget.dart';
 
 class ScheduleList extends StatefulWidget {
   final String apiUrl;
+  final DateTime startDate;
+  final DateTime endDate;
 
-  const ScheduleList({super.key, required this.apiUrl});
+  const ScheduleList(
+      {super.key,
+      required this.apiUrl,
+      required this.startDate,
+      required this.endDate});
 
   @override
   State<ScheduleList> createState() => _ScheduleListState();
@@ -113,55 +120,48 @@ class _ScheduleListState extends State<ScheduleList> {
                       const Expanded(child: TourSpotList()),
                       Padding(
                         padding: const EdgeInsets.all(8.0),
-                        child: Row(
-                          children: [
-                            Expanded(
-                              child: TextField(
-                                maxLines: 3,
-                                minLines: 1,
-                                cursorColor: mainColor,
-                                decoration: InputDecoration(
-                                  hintText: "멋진 여행 계획을 짜줘.",
-                                  enabledBorder: OutlineInputBorder(
-                                    borderSide:
-                                        const BorderSide(color: mainColor),
-                                    borderRadius: BorderRadius.circular(10),
-                                  ),
-                                  focusedBorder: OutlineInputBorder(
-                                    borderSide:
-                                        const BorderSide(color: mainColor),
-                                    borderRadius: BorderRadius.circular(10),
-                                  ),
-                                ),
-                                controller: _promptText,
+                        child: InkWell(
+                          onTap: () async {
+                            ///챗 지피티 호출 기능 구현예정
+
+                            debugPrint(
+                                "시작일시 - ${DateFormat('yyyy.MM.dd. HH:mm').format(widget.startDate)}");
+                            debugPrint(
+                                "종료일시 - ${DateFormat('yyyy.MM.dd. HH:mm').format(widget.endDate)}");
+                            int listNum = 0;
+                            String dataForSendGPT = tourSetting;
+                            for (var element in locationList) {
+                              listNum++;
+                              dataForSendGPT =
+                                  "$dataForSendGPT i:$listNum name:${element.title}, code:${element.contentTypeId}, location:${element.mapX},${element.mapY}.\n";
+                              if (listNum > 100) {
+                                debugPrint(dataForSendGPT);
+                                Clipboard.setData(
+                                  ClipboardData(text: dataForSendGPT),
+                                );
+                                break;
+                              }
+                            }
+                            // debugPrint(
+                            // "${locationList[0].title}, ${locationList[0].contentTypeId}, ${locationList[0].mapX},${locationList[0].mapY},");
+                          },
+                          child: Container(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 10,
+                              vertical: 15,
+                            ),
+                            decoration: BoxDecoration(
+                              color: mainColor,
+                              borderRadius: BorderRadius.circular(5),
+                            ),
+                            child: const Text(
+                              '여행일정 요청',
+                              style: TextStyle(
+                                color: Colors.white,
                               ),
+                              textAlign: TextAlign.center,
                             ),
-                            const SizedBox(
-                              width: 5,
-                            ),
-                            InkWell(
-                              onTap: () async {
-                                ///챗 지피티 호출 기능 구현예정
-                              },
-                              child: Container(
-                                padding: const EdgeInsets.symmetric(
-                                  horizontal: 10,
-                                  vertical: 15,
-                                ),
-                                decoration: BoxDecoration(
-                                  color: mainColor,
-                                  borderRadius: BorderRadius.circular(5),
-                                ),
-                                child: const Text(
-                                  '여행일정 요청',
-                                  style: TextStyle(
-                                    color: Colors.white,
-                                  ),
-                                  textAlign: TextAlign.center,
-                                ),
-                              ),
-                            ),
-                          ],
+                          ),
                         ),
                       ),
                     ],

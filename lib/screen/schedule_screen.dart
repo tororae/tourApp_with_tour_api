@@ -289,7 +289,11 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                          builder: (context) => ScheduleList(apiUrl: url),
+                          builder: (context) => ScheduleList(
+                            apiUrl: url,
+                            startDate: _startDate,
+                            endDate: _endDate,
+                          ),
                         ),
                       );
                     },
