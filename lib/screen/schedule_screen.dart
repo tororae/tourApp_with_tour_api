@@ -3,9 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import 'package:tour_with_tourapi/main.dart';
-import 'package:tour_with_tourapi/screen/get_location.dart';
+import 'package:tour_with_tourapi/screen/kakao_map_func.dart';
 import 'package:tour_with_tourapi/screen/list_schedule.dart';
-import 'package:tour_with_tourapi/screen/naver_map_func.dart';
 import 'package:tour_with_tourapi/setting/secret.dart';
 import 'package:tour_with_tourapi/setting/theme.dart';
 import 'package:fluttertoast/fluttertoast.dart';
@@ -115,7 +114,7 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
                       showDialog(
                         context: context,
                         builder: (context) {
-                          return naverMapCall(context);
+                          return kakaoMapClickEvent(context);
                         },
                       );
                     },
@@ -277,13 +276,13 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
                         _searchRangeController.text = "1000";
                       }
                       debugPrint(
-                          "경도 : ${currentPosition?.longitude},위도 : ${currentPosition?.latitude}, ${_searchRangeController.text}범위로 검색.");
+                          "경도 : $currentLongitude,위도 : $currentLatitude, ${_searchRangeController.text}범위로 검색.");
                       debugPrint(
                           "출발시간 : ${_startDate.year}년 ${_startDate.month}월 ${_startDate.day}일\n${_startDate.hour}시 ${_startDate.minute}분");
                       debugPrint(
                           "출발시간 : ${_endDate.year}년 ${_endDate.month}월 ${_endDate.day}일\n${_endDate.hour}시 ${_endDate.minute}분");
                       String url =
-                          "$tourApiMainUrl$locationBased$tourApiKey${numOfRows}1000${pageNo}1$others$arrange $mapX${currentPosition?.longitude}$mapY${currentPosition?.latitude}$radius${_searchRangeController.text}";
+                          "$tourApiMainUrl$locationBased$tourApiKey${numOfRows}1000${pageNo}1$others$arrange $mapX$currentLongitude$mapY$currentLatitude$radius${_searchRangeController.text}";
                       debugPrint(url);
                       // getLocationBasedData(url);
                       Navigator.push(

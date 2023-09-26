@@ -2,8 +2,7 @@ import 'dart:math';
 
 import 'package:geolocator/geolocator.dart';
 import 'package:flutter/material.dart';
-
-Position? currentPosition;
+import 'package:tour_with_tourapi/setting/theme.dart';
 
 List<Map<String, dynamic>> jsonData = [];
 bool isLoading = false;
@@ -33,7 +32,7 @@ Future<Position> getCurrentLocation(context) async {
   Position position = await Geolocator.getCurrentPosition();
 
   debugPrint(
-      "내 위치정보를 뿌린다.\n$currentPosition\ntimestamp : ${position.timestamp}\naccuracy : ${position.accuracy}\naltitude : ${position.altitude}\nheading : ${position.heading}\nspeed : ${position.speed}\nspeedAccuracy : ${position.speedAccuracy}\n끝났다.");
+      "내 위치정보를 뿌린다.\n$currentLatitude,$currentLongitude\ntimestamp : ${position.timestamp}\naccuracy : ${position.accuracy}\naltitude : ${position.altitude}\nheading : ${position.heading}\nspeed : ${position.speed}\nspeedAccuracy : ${position.speedAccuracy}\n끝났다.");
   debugPrint("타임스탬프 : ${DateTime.timestamp()}");
 
   return position;

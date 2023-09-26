@@ -4,6 +4,9 @@ const Color mainColor = Color(0xff693FDD);
 const Color subColor = Color(0xff523EBF);
 const Color backColor = Color(0xffF6F8FA);
 
+double currentLongitude = 126.734086;
+double currentLatitude = 37.715133;
+
 String tourSetting = '''너는 여행일정을 짜는 api다.
 API 활용을 위해 오직 JSON 만 반환해야 한다.
 나는 소스를 원하는게 아니고 아래 정보를 활용한 json 반환값을 원한다.

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:kakao_map_plugin/kakao_map_plugin.dart';
 import 'package:provider/provider.dart';
 import 'package:tour_with_tourapi/screen/splash.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
@@ -27,6 +28,11 @@ class LocationProvider with ChangeNotifier {
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+
+  //카카오맵 활용을 위한 초기화
+  AuthRepository.initialize(appKey: kakaoMapApiKey);
+
+  //네이버맵 활용을 위한 초기화(제거예정)
   await NaverMapSdk.instance.initialize(
     clientId: naverMapApiKey,
     onAuthFailed: (ex) {

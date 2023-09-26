@@ -6,9 +6,10 @@ import 'package:flutter/services.dart';
 import 'package:flutter_widget_from_html/flutter_widget_from_html.dart'; //안쓸지도 모름.
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:intl/intl.dart';
+import 'package:kakao_map_plugin/kakao_map_plugin.dart';
 import 'package:tour_with_tourapi/screen/get_location.dart';
+import 'package:tour_with_tourapi/screen/kakao_map_func.dart';
 import 'package:tour_with_tourapi/screen/location_base_info.dart';
-import 'package:tour_with_tourapi/screen/naver_map_func.dart';
 import 'package:tour_with_tourapi/setting/secret.dart';
 import 'package:tour_with_tourapi/setting/theme.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
@@ -50,7 +51,6 @@ class _ScheduleListState extends State<ScheduleList> {
     );
   }
 
-  TextEditingController _promptText = TextEditingController();
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -191,8 +191,8 @@ class TourSpotList extends StatelessWidget {
             contentTypeIdValue = locationList[index].contentTypeId;
 
             calculateDistance(
-                latStart: currentPosition!.latitude,
-                lngStart: currentPosition!.longitude,
+                latStart: currentLatitude,
+                lngStart: currentLongitude,
                 latEnd: locationList[index].mapY,
                 lngEnd: locationList[index].mapX);
 
@@ -456,9 +456,19 @@ class _DetailInfoDialogState extends State<DetailInfoDialog> {
                     SizedBox(
                       width: double.infinity,
                       height: 150,
-                      child: naverMapCallJustSee(
-                          mapX: widget.mapX, mapY: widget.mapY),
-                    )
+                      child: KakaoMap(
+                        onMapCreated: ((controller) async {
+                          markers.clear();
+                          markers.add(Marker(
+                            markerId: UniqueKey().toString(),
+                            latLng: LatLng(widget.mapY, widget.mapX),
+                          ));
+                          setState(() {});
+                        }),
+                        markers: markers.toList(),
+                        center: LatLng(widget.mapY, widget.mapX),
+                      ),
+                    ),
                   ],
                 ),
               ),

@@ -1,122 +1,72 @@
-// ignore: unused_import
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
-import 'package:flutter_naver_map/flutter_naver_map.dart';
-import 'package:geolocator/geolocator.dart';
 import 'package:http/http.dart' as http;
+
+import 'package:kakao_map_plugin/kakao_map_plugin.dart';
+import 'package:provider/provider.dart';
 import 'package:tour_with_tourapi/main.dart';
-import 'package:tour_with_tourapi/screen/get_location.dart';
 import 'package:tour_with_tourapi/setting/secret.dart';
 import 'package:tour_with_tourapi/setting/theme.dart';
-import 'package:provider/provider.dart';
 
+Set<Marker> markers = {};
 String areaName = ""; //동변환 주소값 담기는 변수
 
-//현재 위치 받아오기 실패시 초기화
-Position getPosition = currentPosition ??
-    Position(
-      latitude: 37.715133,
-      longitude: 126.734086,
-      timestamp: DateTime.timestamp(),
-      accuracy: 15.163000106811523,
-      altitude: 34.30000305175781,
-      heading: 32.578853607177734,
-      speed: 0.12078452110290527,
-      speedAccuracy: 0,
-    );
-
-//목록에서 지도 호출시
-NaverMap naverMapCall(context) {
-  getPosition = currentPosition ??
-      Position(
-        latitude: 37.715133,
-        longitude: 126.734086,
-        timestamp: DateTime.timestamp(),
-        accuracy: 15.163000106811523,
-        altitude: 34.30000305175781,
-        heading: 32.578853607177734,
-        speed: 0.12078452110290527,
-        speedAccuracy: 0,
-      );
-  debugPrint("위도 : ${getPosition.latitude}, 경도 : ${getPosition.longitude}");
-  return NaverMap(
-    options: NaverMapViewOptions(
-      initialCameraPosition: NCameraPosition(
-        target: NLatLng(getPosition.latitude, getPosition.longitude),
-        zoom: 10,
-        bearing: 0,
-        tilt: 0,
-      ),
-      mapType: NMapType.basic,
-      activeLayerGroups: [NLayerGroup.building, NLayerGroup.transit],
-    ),
-    onMapReady: (myMapController) {
-      debugPrint("네이버 맵 로딩됨!");
-    },
-    onMapTapped: (point, latLng) {
-      // Navigator.pop(context);
-      debugPrint("${latLng.latitude}、${latLng.longitude}");
-      getPosition = Position(
-          longitude: latLng.longitude,
-          latitude: latLng.latitude,
-          timestamp: getPosition.timestamp,
-          accuracy: getPosition.accuracy,
-          altitude: getPosition.altitude,
-          heading: getPosition.heading,
-          speed: getPosition.speed,
-          speedAccuracy: getPosition.speedAccuracy);
-
-      getAddress(context, "${latLng.longitude},${latLng.latitude}");
+Widget kakaoMapClickEvent(context) {
+  return KakaoMap(
+    center: LatLng(currentLatitude, currentLongitude),
+    onMapTap: (latLng) {
       showDialog(
         context: context,
         builder: (context) {
-          return chkPickLocation(context, getPosition);
+          return chkPickLocation(context,
+              longitude: latLng.longitude, latitude: latLng.latitude);
         },
       );
+      getAddress(context,
+          latitude: latLng.latitude, longitude: latLng.longitude);
+      debugPrint("너 설마?");
     },
   );
 }
 
-//상세정보에서 마커로 찍은 내 목적지 확인용
-NaverMap naverMapCallJustSee({required double mapX, required double mapY}) {
-  // map X가 경도, map Y가 위도.
-  getPosition = Position(
-    latitude: mapY,
-    longitude: mapX,
-    timestamp: DateTime.timestamp(),
-    accuracy: 15.163000106811523,
-    altitude: 34.30000305175781,
-    heading: 32.578853607177734,
-    speed: 0.12078452110290527,
-    speedAccuracy: 0,
-  );
-  final targetPlace = NMarker(
-    id: '1',
-    position: NLatLng(mapY, mapX),
-  );
-
-  debugPrint("위도 : ${getPosition.latitude}, 경도 : ${getPosition.longitude}");
-  return NaverMap(
-    options: NaverMapViewOptions(
-      initialCameraPosition: NCameraPosition(
-        target: NLatLng(getPosition.latitude, getPosition.longitude),
-        zoom: 15,
-        bearing: 0,
-        tilt: 0,
-      ),
-      mapType: NMapType.basic,
-      activeLayerGroups: [NLayerGroup.building, NLayerGroup.transit],
-    ),
-    onMapReady: (myMapController) {
-      debugPrint("네이버 맵 로딩됨!");
-      myMapController.addOverlay(targetPlace);
+Future<String> getAddress(context,
+    {required double longitude, required double latitude}) async {
+  const String apiUrl =
+      "https://dapi.kakao.com/v2/local/geo/coord2address.json?input_coord=WGS84&x=";
+  const String apiUrl2 = "&y=";
+  debugPrint("$longitude, $latitude 와 함께 getAddress 실행.");
+  debugPrint("$apiUrl$longitude$apiUrl2$latitude");
+  final locationProvider =
+      Provider.of<LocationProvider>(context, listen: false);
+  // try {
+  final response = await http.get(
+    Uri.parse("$apiUrl$longitude$apiUrl2$latitude"),
+    headers: {
+      'Authorization': 'KakaoAK $kakaoMapRestApiKey',
     },
   );
+  final decodedResponse = json.decode(response.body);
+
+  // // JSON 응답을 파싱하여 주소 정보 추출
+  debugPrint(response.body);
+  if (decodedResponse['documents'].isEmpty) {
+    debugPrint("비었구만. 체크완료");
+    locationProvider.updatePopupText("주소가 없는 장소에요.");
+    return "주소가 없는 장소에요.";
+  }
+  final document = decodedResponse['documents'][0];
+  final address = document['address'];
+
+  debugPrint("걍주소 - $address ");
+
+  locationProvider.updatePopupText(
+      "${address['region_1depth_name']} ${address['region_2depth_name']} ${address['region_3depth_name']}");
+  return "${address['region_1depth_name']} ${address['region_2depth_name']} ${address['region_3depth_name']}";
 }
 
 ///좌표 동변환 함수
-Future<String> getAddress(context, position) async {
+Future<String> getAddressNaver(context, position) async {
   const String apiUrl =
       "https://naveropenapi.apigw.ntruss.com/map-reversegeocode/v2/gc";
   String coords = position; // 여기에 입력 좌표 값을 넣으세요
@@ -159,7 +109,7 @@ Future<String> getAddress(context, position) async {
 }
 
 ///지도 클릭시 팝업화면
-chkPickLocation(context, position) {
+chkPickLocation(context, {required longitude, required latitude}) {
   final locationProvider = Provider.of<LocationProvider>(context);
 
   return AlertDialog(
@@ -221,9 +171,10 @@ chkPickLocation(context, position) {
           onTap: () {
             Navigator.pop(context);
             Navigator.pop(context);
-            currentPosition = position;
-            debugPrint(
-                "..\n${position.latitude},${position.longitude} 대입 완료\n..");
+            currentLongitude = longitude;
+            currentLatitude = latitude;
+            // currentPosition = position;
+            debugPrint("..\n$latitude,$longitude 대입 완료\n..");
             locationProvider.updateText(locationProvider.popupLocation);
           },
           child: Container(

@@ -6,7 +6,7 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:provider/provider.dart';
 import 'package:tour_with_tourapi/main.dart';
 import 'package:tour_with_tourapi/screen/get_location.dart';
-import 'package:tour_with_tourapi/screen/naver_map_func.dart';
+import 'package:tour_with_tourapi/screen/kakao_map_func.dart';
 import 'package:tour_with_tourapi/screen/schedule_screen.dart';
 import 'package:tour_with_tourapi/setting/theme.dart';
 
@@ -44,11 +44,16 @@ class _MainScreenState extends State<MainScreen> {
       //이를 통해서 내 현재위치를 스케쥴로 전달.
       getCurrentLocation(context).then(
         (value) {
-          //현재 위치에 값 저장.
-          currentPosition = value;
+          currentLatitude = value.latitude;
+          currentLongitude = value.longitude;
           //포지션의 위도경도 주소로 변환 후 받아서 프로바이더에 전달.
-          getAddress(context, "${value.longitude},${value.latitude}")
-              .then((value) => locationProvider.updateText(value));
+          getAddress(context,
+                  longitude: value.longitude, latitude: value.latitude)
+              .then((value) {
+            locationProvider.updateText(value);
+          });
+          // getAddress(context, "${value.longitude},${value.latitude}")
+          //     .then((value) => locationProvider.updateText(value));
         },
       );
       _isInitialized = true; // 최초 실행 후 변수 값을 변경하여 다음에는 실행되지 않도록 함
