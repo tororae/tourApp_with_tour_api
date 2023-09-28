@@ -6,7 +6,7 @@
     <application
         android:label="tour_with_tourapi"
         android:name="${applicationName}"
-        android:icon="@mipmap/ic_launcher"
+        android:icon="@mipmap/launcher_icon"
         android:usesCleartextTraffic="true">
         <!--윗줄 usesCleartextTraffic 는 https 통신이 아닌 평문으로 보내는거라고 함. 보안이 취약해진다는데.. 보고 빼든지 해야함;-->
 
