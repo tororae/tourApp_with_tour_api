@@ -6,6 +6,9 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
 List<dynamic> locationList = [];
+List<dynamic> foodList = [];
+List<dynamic> tourList = [];
+List<dynamic> sleepList = [];
 bool isInfoLoading = false;
 
 //위치기반 정보 api 호출받아서 넣을 모델클래스 선언
@@ -61,8 +64,52 @@ Future<void> getLocationBasedData(apiUrl) async {
             mapY: double.parse(item['mapy'] ?? "0"),
           ),
         );
-        debugPrint(
-            "${item['title']},${item['addr1']},${item['contentid']},${item['contenttypeid']},${item['dist']},${item['mapx']},${item['mapy']},");
+
+        if (item['contenttypeid'] == "32") {
+          debugPrint("${item['title']}은 숙소다.");
+          sleepList.add(
+            LocationData(
+              title: item['title'],
+              address: item['addr1'],
+              imageUrl: item['firstimage'],
+              contentId: item['contentid'] ?? "",
+              contentTypeId: item['contenttypeid'] ?? "",
+              dist: double.parse(item['dist']),
+              mapX: double.parse(item['mapx'] ?? "0"),
+              mapY: double.parse(item['mapy'] ?? "0"),
+            ),
+          );
+        } else if (item['contenttypeid'] == "39") {
+          debugPrint("${item['title']}은 음식점이다.");
+          foodList.add(
+            LocationData(
+              title: item['title'],
+              address: item['addr1'],
+              imageUrl: item['firstimage'],
+              contentId: item['contentid'] ?? "",
+              contentTypeId: item['contenttypeid'] ?? "",
+              dist: double.parse(item['dist']),
+              mapX: double.parse(item['mapx'] ?? "0"),
+              mapY: double.parse(item['mapy'] ?? "0"),
+            ),
+          );
+        } else {
+          tourList.add(
+            LocationData(
+              title: item['title'],
+              address: item['addr1'],
+              imageUrl: item['firstimage'],
+              contentId: item['contentid'] ?? "",
+              contentTypeId: item['contenttypeid'] ?? "",
+              dist: double.parse(item['dist']),
+              mapX: double.parse(item['mapx'] ?? "0"),
+              mapY: double.parse(item['mapy'] ?? "0"),
+            ),
+          );
+        }
+
+        // debugPrint(
+        //     "${item['title']},${item['addr1']},${item['contentid']},${item['contenttypeid']},${item['dist']},${item['mapx']},${item['mapy']},");
       }
     }
   } else {

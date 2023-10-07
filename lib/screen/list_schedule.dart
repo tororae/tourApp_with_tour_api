@@ -1,6 +1,8 @@
 ///위치를 기반으로 api를 호출하여 불러온 목록을 보여주는 화면.
 ///
 
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_widget_from_html/flutter_widget_from_html.dart'; //안쓸지도 모름.
@@ -13,6 +15,35 @@ import 'package:tour_with_tourapi/screen/location_base_info.dart';
 import 'package:tour_with_tourapi/setting/secret.dart';
 import 'package:tour_with_tourapi/setting/theme.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
+
+List<dynamic> planList = []; //최종 여행정보를 담는 리스트.
+
+//최종 여행정보를 담기 위한 모델 클래스 선언. 시작과 끝시간도 담는다.
+class TourInfoData {
+  final String title;
+  final String address;
+  final String imageUrl;
+  final double dist;
+  final double mapX;
+  final double mapY;
+  final String contentId;
+  final String contentTypeId;
+  final DateTime enterDate;
+  final DateTime exitDate;
+
+  TourInfoData({
+    required this.title,
+    required this.address,
+    required this.imageUrl,
+    required this.dist,
+    required this.mapX,
+    required this.mapY,
+    required this.contentId,
+    required this.contentTypeId,
+    required this.enterDate,
+    required this.exitDate,
+  });
+}
 
 class ScheduleList extends StatefulWidget {
   final String apiUrl;
@@ -31,21 +62,85 @@ class ScheduleList extends StatefulWidget {
 
 class _ScheduleListState extends State<ScheduleList> {
   bool _isProgressing = false;
+  late int randomTour;
 
   ///화면 나갔다왔을때 새로고침을 위한 didChangeDependencies 사용.
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
+    DateTime tourSettingDate = widget.startDate;
+
     _isProgressing = true;
     // 이전 화면에서 돌아올 때마다 데이터를 다시 불러오고 화면을 갱신합니다.
     getLocationBasedData(widget.apiUrl).then(
       (value) {
         if (mounted) {
           //화면이 없을때 setState 하면 에러남. 이를 막기 위해 mounted 되어있는지 확인하고 진행.
-          setState(() {
-            _isProgressing = false;
-            debugPrint("${widget.apiUrl}을 통한 호출 완료!!!!!!!!!");
-          });
+          setState(
+            () {
+              for (int i = 0; i < 10; i++) {
+                //밤이 늦어 자러가는 상황
+                if (tourSettingDate.hour > 21 || tourSettingDate.hour < 7) {
+                  randomTour = Random().nextInt(sleepList.length);
+                  debugPrint(
+                      "${tourSettingDate.hour}시 ${tourSettingDate.minute}분. ${sleepList[randomTour].title}로 자러간다.");
+
+                  //숙박하면 하루 지남.
+                  if (tourSettingDate.hour > 21) {
+                    tourSettingDate =
+                        tourSettingDate.add(const Duration(days: 1));
+                    tourSettingDate = DateTime(tourSettingDate.year,
+                        tourSettingDate.month, tourSettingDate.day, 7, 0);
+                  }
+                  //그냥 늦은입실이면 11시까지 자게 두자.
+                  else {
+                    tourSettingDate = DateTime(tourSettingDate.year,
+                        tourSettingDate.month, tourSettingDate.day, 11, 0);
+                  }
+                  debugPrint(
+                      "${tourSettingDate.hour}시 ${tourSettingDate.minute}분. ${sleepList[randomTour].title}에서 기상 완료.");
+                }
+
+                //11시~1시 사이 점심식사
+                else if (tourSettingDate.hour >= 11 &&
+                    tourSettingDate.hour < 13) {
+                  randomTour = Random().nextInt(foodList.length);
+                  debugPrint(
+                      "${tourSettingDate.hour}시 ${tourSettingDate.minute}분. ${foodList[randomTour].title} 점심식사.");
+
+                  tourSettingDate =
+                      tourSettingDate.add(const Duration(hours: 1));
+                }
+
+                //18시~19시 사이 저녁식사
+                else if (tourSettingDate.hour >= 18 &&
+                    tourSettingDate.hour <= 19) {
+                  randomTour = Random().nextInt(foodList.length);
+                  debugPrint(
+                      "${tourSettingDate.hour}시 ${tourSettingDate.minute}분. ${foodList[randomTour].title} 저녁식사.");
+
+                  tourSettingDate =
+                      tourSettingDate.add(const Duration(hours: 1));
+                } else {
+                  randomTour = Random().nextInt(tourList.length);
+
+                  debugPrint(
+                      "${tourSettingDate.hour}시. ${tourList[randomTour].title}로 관광간다.");
+                  tourSettingDate = tourSettingDate
+                      .add(Duration(hours: Random().nextInt(2) + 1));
+
+                  debugPrint(
+                      "${tourSettingDate.hour}시 ${tourSettingDate.minute}분. 관광 끝.. ");
+                  tourSettingDate = tourSettingDate
+                      .add(Duration(minutes: (Random().nextInt(5) + 1) * 10));
+                }
+
+                /////
+              }
+              _isProgressing = false;
+              debugPrint("${widget.apiUrl}을 통한 호출 완료!!!!!!!!!");
+            },
+          );
         }
       },
     );
@@ -175,6 +270,7 @@ class _ScheduleListState extends State<ScheduleList> {
 String contentIdValue = "";
 String contentTypeIdValue = "";
 
+//리스트 내 들어가는 관광지들 목록
 class TourSpotList extends StatelessWidget {
   const TourSpotList({
     super.key,
@@ -539,6 +635,7 @@ String tourTypeText(contentTypeId) {
   return typeValue;
 }
 
+//관광타입에 맞는 컬러 반환
 Color tourTypeColor(contentTypeId) {
   Color typeValue;
   switch (contentTypeId) {
