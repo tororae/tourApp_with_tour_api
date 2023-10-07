@@ -1,4 +1,4 @@
-package com.example.tour_with_tourapi
+package altools.smartbusan
 
 import android.os.Bundle
 import io.flutter.embedding.android.FlutterActivity

@@ -4,7 +4,7 @@
     <!-- 카카오맵을 웹뷰로 불러옴. 인터넷 통신 필요. 근데 기존에도 통신했는데 왜 이제와서 넣는지 의문.-->
     <uses-permission android:name="android.permission.INTERNET" />
     <application
-        android:label="tour_with_tourapi"
+        android:label="스마트부산"
         android:name="${applicationName}"
         android:icon="@mipmap/launcher_icon"
         android:usesCleartextTraffic="true">
