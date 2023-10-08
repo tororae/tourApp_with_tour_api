@@ -103,6 +103,21 @@ class _ScheduleListState extends State<ScheduleList> {
                     tourSettingDate = DateTime(tourSettingDate.year,
                         tourSettingDate.month, tourSettingDate.day, 11, 0);
                   }
+                  tourExitDate = tourSettingDate;
+
+                  finalTourList.add(FinalTourData(
+                      title: sleepList[randomTour].title,
+                      address: sleepList[randomTour].address,
+                      imageUrl: sleepList[randomTour].imageUrl,
+                      dist: sleepList[randomTour].dist,
+                      mapX: sleepList[randomTour].mapX,
+                      mapY: sleepList[randomTour].mapY,
+                      contentId: sleepList[randomTour].contentId,
+                      contentTypeId: sleepList[randomTour].contentTypeId,
+                      enterTime: tourEnterDate,
+                      exitTime: tourExitDate,
+                      itemKey: sleepList[randomTour].itemKey));
+
                   debugPrint(
                       "${tourSettingDate.hour}시 ${tourSettingDate.minute}분. ${sleepList[randomTour].title}에서 기상 완료.");
                 }
@@ -114,8 +129,24 @@ class _ScheduleListState extends State<ScheduleList> {
                   debugPrint(
                       "${tourSettingDate.hour}시 ${tourSettingDate.minute}분. ${foodList[randomTour].title} 점심식사.");
 
+                  //점심 한시간~
+                  tourEnterDate = tourSettingDate;
                   tourSettingDate =
                       tourSettingDate.add(const Duration(hours: 1));
+                  tourExitDate = tourSettingDate;
+
+                  finalTourList.add(FinalTourData(
+                      title: foodList[randomTour].title,
+                      address: foodList[randomTour].address,
+                      imageUrl: foodList[randomTour].imageUrl,
+                      dist: foodList[randomTour].dist,
+                      mapX: foodList[randomTour].mapX,
+                      mapY: foodList[randomTour].mapY,
+                      contentId: foodList[randomTour].contentId,
+                      contentTypeId: foodList[randomTour].contentTypeId,
+                      enterTime: tourEnterDate,
+                      exitTime: tourExitDate,
+                      itemKey: foodList[randomTour].itemKey));
                 }
 
                 //18시~19시 사이 저녁식사
@@ -125,18 +156,52 @@ class _ScheduleListState extends State<ScheduleList> {
                   debugPrint(
                       "${tourSettingDate.hour}시 ${tourSettingDate.minute}분. ${foodList[randomTour].title} 저녁식사.");
 
+                  //저녁 한시간~
+                  tourEnterDate = tourSettingDate;
                   tourSettingDate =
                       tourSettingDate.add(const Duration(hours: 1));
+                  tourExitDate = tourSettingDate;
+
+                  finalTourList.add(FinalTourData(
+                      title: foodList[randomTour].title,
+                      address: foodList[randomTour].address,
+                      imageUrl: foodList[randomTour].imageUrl,
+                      dist: foodList[randomTour].dist,
+                      mapX: foodList[randomTour].mapX,
+                      mapY: foodList[randomTour].mapY,
+                      contentId: foodList[randomTour].contentId,
+                      contentTypeId: foodList[randomTour].contentTypeId,
+                      enterTime: tourEnterDate,
+                      exitTime: tourExitDate,
+                      itemKey: foodList[randomTour].itemKey));
                 } else {
                   randomTour = Random().nextInt(tourList.length);
 
                   debugPrint(
                       "${tourSettingDate.hour}시. ${tourList[randomTour].title}로 관광간다.");
-                  tourSettingDate = tourSettingDate
-                      .add(Duration(hours: Random().nextInt(2) + 1));
 
                   debugPrint(
                       "${tourSettingDate.hour}시 ${tourSettingDate.minute}분. 관광 끝.. ");
+
+                  tourEnterDate = tourSettingDate;
+                  tourSettingDate = tourSettingDate
+                      .add(Duration(hours: Random().nextInt(2) + 1));
+                  tourExitDate = tourSettingDate;
+
+                  finalTourList.add(FinalTourData(
+                      title: tourList[randomTour].title,
+                      address: tourList[randomTour].address,
+                      imageUrl: tourList[randomTour].imageUrl,
+                      dist: tourList[randomTour].dist,
+                      mapX: tourList[randomTour].mapX,
+                      mapY: tourList[randomTour].mapY,
+                      contentId: tourList[randomTour].contentId,
+                      contentTypeId: tourList[randomTour].contentTypeId,
+                      enterTime: tourEnterDate,
+                      exitTime: tourExitDate,
+                      itemKey: tourList[randomTour].itemKey));
+
+//관광이후 이동시간
                   tourSettingDate = tourSettingDate
                       .add(Duration(minutes: (Random().nextInt(5) + 1) * 10));
                 }
