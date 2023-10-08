@@ -60,5 +60,9 @@ String calculateDistance({
       "$latStart,$lngStart 그리고 $latEnd, $lngEnd로 간다.!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
 
   debugPrint("${(z).toStringAsFixed(3)} km");
-  return (z).toStringAsFixed(3);
+  if (z < 1) {
+    return "${(z * 1000).toStringAsFixed(0)} M";
+  } else {
+    return "${(z).toStringAsFixed(2)} Km";
+  }
 }

@@ -78,148 +78,216 @@ class _ScheduleListState extends State<ScheduleList> {
       (value) {
         if (mounted) {
           //화면이 없을때 setState 하면 에러남. 이를 막기 위해 mounted 되어있는지 확인하고 진행.
+          bool foodEmpty = false;
+          bool sleepEmpty = false;
+          bool tourEmpty = false;
+          if (foodList.isEmpty) {
+            foodEmpty = true;
+          }
+          if (sleepList.isEmpty) {
+            sleepEmpty = true;
+          }
+          if (tourList.isEmpty) {
+            tourEmpty = true;
+          }
+
           setState(
             () {
               //eated 0:식사 X 1:점심먹은상태 2:저녁먹은상태
               int eated = 0;
+              finalTourList.clear();
 
               for (int i = 0; i < 30; i++) {
                 //밤이 늦어 자러가는 상황
                 if (tourSettingDate.hour > 21 || tourSettingDate.hour < 7) {
-                  randomTour = Random().nextInt(sleepList.length);
+                  //숙소가 있어야 실행.
+                  if (sleepEmpty == false) {
+                    randomTour = Random().nextInt(sleepList.length);
 
-                  //입장시간 저장 루틴
-                  tourEnterDate = tourSettingDate;
+                    //입장시간 저장 루틴
+                    tourEnterDate = tourSettingDate;
 
-                  debugPrint(
-                      "${tourSettingDate.hour}시 ${tourSettingDate.minute}분. ${sleepList[randomTour].title}로 자러간다.");
+                    debugPrint(
+                        "${tourSettingDate.hour}시 ${tourSettingDate.minute}분. ${sleepList[randomTour].title}로 자러간다.");
 
-                  //숙박하면 하루 지남.
-                  if (tourSettingDate.hour > 21) {
-                    tourSettingDate =
-                        tourSettingDate.add(const Duration(days: 1));
+                    //숙박하면 하루 지남.
+                    if (tourSettingDate.hour > 21) {
+                      tourSettingDate =
+                          tourSettingDate.add(const Duration(days: 1));
+                      tourSettingDate = DateTime(tourSettingDate.year,
+                          tourSettingDate.month, tourSettingDate.day, 7, 0);
+                    }
+                    //그냥 늦은입실이면 11시까지 자게 두자.
+                    else {
+                      tourSettingDate = DateTime(tourSettingDate.year,
+                          tourSettingDate.month, tourSettingDate.day, 11, 0);
+                    }
+                    tourExitDate = tourSettingDate;
+
+                    finalTourList.add(
+                      FinalTourData(
+                        title: sleepList[randomTour].title,
+                        address: sleepList[randomTour].address,
+                        imageUrl: sleepList[randomTour].imageUrl,
+                        dist: sleepList[randomTour].dist,
+                        mapX: sleepList[randomTour].mapX,
+                        mapY: sleepList[randomTour].mapY,
+                        contentId: sleepList[randomTour].contentId,
+                        contentTypeId: sleepList[randomTour].contentTypeId,
+                        enterTime: tourEnterDate,
+                        exitTime: tourExitDate,
+                        itemKey: UniqueKey(),
+                      ),
+                    );
+                    //취침후 이동시간
+                    tourSettingDate = tourSettingDate
+                        .add(Duration(minutes: (Random().nextInt(5) + 1) * 10));
+                    debugPrint(
+                        "${tourSettingDate.hour}시 ${tourSettingDate.minute}분. ${sleepList[randomTour].title}에서 기상 완료.");
+                  }
+                  //숙소가 없으므로 그냥 시간 7시로 이동.
+                  else {
+                    debugPrint("숙소가 없어서 숙박 넘김");
+
                     tourSettingDate = DateTime(tourSettingDate.year,
                         tourSettingDate.month, tourSettingDate.day, 7, 0);
                   }
-                  //그냥 늦은입실이면 11시까지 자게 두자.
-                  else {
-                    tourSettingDate = DateTime(tourSettingDate.year,
-                        tourSettingDate.month, tourSettingDate.day, 11, 0);
-                  }
-                  tourExitDate = tourSettingDate;
-
-                  finalTourList.add(FinalTourData(
-                      title: sleepList[randomTour].title,
-                      address: sleepList[randomTour].address,
-                      imageUrl: sleepList[randomTour].imageUrl,
-                      dist: sleepList[randomTour].dist,
-                      mapX: sleepList[randomTour].mapX,
-                      mapY: sleepList[randomTour].mapY,
-                      contentId: sleepList[randomTour].contentId,
-                      contentTypeId: sleepList[randomTour].contentTypeId,
-                      enterTime: tourEnterDate,
-                      exitTime: tourExitDate,
-                      itemKey: sleepList[randomTour].itemKey));
-                  //취침후 이동시간
-                  tourSettingDate = tourSettingDate
-                      .add(Duration(minutes: (Random().nextInt(5) + 1) * 10));
-                  debugPrint(
-                      "${tourSettingDate.hour}시 ${tourSettingDate.minute}분. ${sleepList[randomTour].title}에서 기상 완료.");
                 }
 
                 //11시~1시 사이 점심식사
                 else if (tourSettingDate.hour >= 11 &&
                     tourSettingDate.hour < 13 &&
                     eated != 1) {
-                  eated = 1;
-                  randomTour = Random().nextInt(foodList.length);
-                  debugPrint(
-                      "${tourSettingDate.hour}시 ${tourSettingDate.minute}분. ${foodList[randomTour].title} 점심식사.");
+                  //식당 목록이 비었으면 그냥 시간 넘겨야함.
+                  if (foodEmpty == false) {
+                    eated = 1;
+                    randomTour = Random().nextInt(foodList.length);
+                    debugPrint(
+                        "${tourSettingDate.hour}시 ${tourSettingDate.minute}분. ${foodList[randomTour].title} 점심식사.");
 
-                  //점심 한시간~
-                  tourEnterDate = tourSettingDate;
-                  tourSettingDate =
-                      tourSettingDate.add(const Duration(hours: 1));
-                  tourExitDate = tourSettingDate;
+                    //점심 한시간~
+                    tourEnterDate = tourSettingDate;
+                    tourSettingDate =
+                        tourSettingDate.add(const Duration(hours: 1));
+                    tourExitDate = tourSettingDate;
 
-                  finalTourList.add(FinalTourData(
-                      title: foodList[randomTour].title,
-                      address: foodList[randomTour].address,
-                      imageUrl: foodList[randomTour].imageUrl,
-                      dist: foodList[randomTour].dist,
-                      mapX: foodList[randomTour].mapX,
-                      mapY: foodList[randomTour].mapY,
-                      contentId: foodList[randomTour].contentId,
-                      contentTypeId: foodList[randomTour].contentTypeId,
-                      enterTime: tourEnterDate,
-                      exitTime: tourExitDate,
-                      itemKey: foodList[randomTour].itemKey));
-                  //식사후 이동시간
-                  tourSettingDate = tourSettingDate
-                      .add(Duration(minutes: (Random().nextInt(5) + 1) * 10));
+                    finalTourList.add(
+                      FinalTourData(
+                        title: foodList[randomTour].title,
+                        address: foodList[randomTour].address,
+                        imageUrl: foodList[randomTour].imageUrl,
+                        dist: foodList[randomTour].dist,
+                        mapX: foodList[randomTour].mapX,
+                        mapY: foodList[randomTour].mapY,
+                        contentId: foodList[randomTour].contentId,
+                        contentTypeId: foodList[randomTour].contentTypeId,
+                        enterTime: tourEnterDate,
+                        exitTime: tourExitDate,
+                        itemKey: UniqueKey(),
+                      ),
+                    );
+                    //식사후 이동시간
+                    tourSettingDate = tourSettingDate
+                        .add(Duration(minutes: (Random().nextInt(5) + 1) * 10));
+                  } else {
+                    debugPrint("음식이 없어서 저녁 넘김");
+
+                    tourSettingDate = DateTime(tourSettingDate.year,
+                        tourSettingDate.month, tourSettingDate.day, 13, 0);
+                    eated = 1;
+                  }
                 }
 
                 //18시~19시 사이 저녁식사
                 else if (tourSettingDate.hour >= 18 &&
                     tourSettingDate.hour <= 19 &&
                     eated != 2) {
-                  eated = 2;
-                  randomTour = Random().nextInt(foodList.length);
-                  debugPrint(
-                      "${tourSettingDate.hour}시 ${tourSettingDate.minute}분. ${foodList[randomTour].title} 저녁식사.");
+                  if (foodEmpty == false) {
+                    eated = 2;
+                    randomTour = Random().nextInt(foodList.length);
+                    debugPrint(
+                        "${tourSettingDate.hour}시 ${tourSettingDate.minute}분. ${foodList[randomTour].title} 저녁식사.");
 
-                  //저녁 한시간~
-                  tourEnterDate = tourSettingDate;
-                  tourSettingDate =
-                      tourSettingDate.add(const Duration(hours: 1));
-                  tourExitDate = tourSettingDate;
+                    //저녁 한시간~
+                    tourEnterDate = tourSettingDate;
+                    tourSettingDate =
+                        tourSettingDate.add(const Duration(hours: 1));
+                    tourExitDate = tourSettingDate;
 
-                  finalTourList.add(FinalTourData(
-                      title: foodList[randomTour].title,
-                      address: foodList[randomTour].address,
-                      imageUrl: foodList[randomTour].imageUrl,
-                      dist: foodList[randomTour].dist,
-                      mapX: foodList[randomTour].mapX,
-                      mapY: foodList[randomTour].mapY,
-                      contentId: foodList[randomTour].contentId,
-                      contentTypeId: foodList[randomTour].contentTypeId,
-                      enterTime: tourEnterDate,
-                      exitTime: tourExitDate,
-                      itemKey: foodList[randomTour].itemKey));
+                    finalTourList.add(
+                      FinalTourData(
+                        title: foodList[randomTour].title,
+                        address: foodList[randomTour].address,
+                        imageUrl: foodList[randomTour].imageUrl,
+                        dist: foodList[randomTour].dist,
+                        mapX: foodList[randomTour].mapX,
+                        mapY: foodList[randomTour].mapY,
+                        contentId: foodList[randomTour].contentId,
+                        contentTypeId: foodList[randomTour].contentTypeId,
+                        enterTime: tourEnterDate,
+                        exitTime: tourExitDate,
+                        itemKey: UniqueKey(),
+                      ),
+                    );
 
-                  //식사후 이동시간
-                  tourSettingDate = tourSettingDate
-                      .add(Duration(minutes: (Random().nextInt(5) + 1) * 10));
+                    //식사후 이동시간
+                    tourSettingDate = tourSettingDate
+                        .add(Duration(minutes: (Random().nextInt(5) + 1) * 10));
+                  } else {
+                    debugPrint("음식이 없어서 저녁 넘김");
+                    eated = 2;
+                    tourSettingDate = DateTime(tourSettingDate.year,
+                        tourSettingDate.month, tourSettingDate.day, 29, 0);
+                  }
                 } else {
-                  randomTour = Random().nextInt(tourList.length);
+                  if (tourEmpty == false) {
+                    randomTour = Random().nextInt(tourList.length);
 
-                  debugPrint(
-                      "${tourSettingDate.hour}시. ${tourList[randomTour].title}로 관광간다.");
+                    debugPrint(
+                        "${tourSettingDate.hour}시. ${tourList[randomTour].title}로 관광간다.");
 
-                  debugPrint(
-                      "${tourSettingDate.hour}시 ${tourSettingDate.minute}분. 관광 끝.. ");
+                    debugPrint(
+                        "${tourSettingDate.hour}시 ${tourSettingDate.minute}분. 관광 끝.. ");
 
-                  tourEnterDate = tourSettingDate;
-                  tourSettingDate = tourSettingDate
-                      .add(Duration(hours: Random().nextInt(2) + 1));
-                  tourExitDate = tourSettingDate;
+                    tourEnterDate = tourSettingDate;
+                    tourSettingDate = tourSettingDate
+                        .add(Duration(hours: Random().nextInt(2) + 1));
+                    tourExitDate = tourSettingDate;
 
-                  finalTourList.add(FinalTourData(
-                      title: tourList[randomTour].title,
-                      address: tourList[randomTour].address,
-                      imageUrl: tourList[randomTour].imageUrl,
-                      dist: tourList[randomTour].dist,
-                      mapX: tourList[randomTour].mapX,
-                      mapY: tourList[randomTour].mapY,
-                      contentId: tourList[randomTour].contentId,
-                      contentTypeId: tourList[randomTour].contentTypeId,
-                      enterTime: tourEnterDate,
-                      exitTime: tourExitDate,
-                      itemKey: tourList[randomTour].itemKey));
+                    finalTourList.add(
+                      FinalTourData(
+                        title: tourList[randomTour].title,
+                        address: tourList[randomTour].address,
+                        imageUrl: tourList[randomTour].imageUrl,
+                        dist: tourList[randomTour].dist,
+                        mapX: tourList[randomTour].mapX,
+                        mapY: tourList[randomTour].mapY,
+                        contentId: tourList[randomTour].contentId,
+                        contentTypeId: tourList[randomTour].contentTypeId,
+                        enterTime: tourEnterDate,
+                        exitTime: tourExitDate,
+                        itemKey: UniqueKey(),
+                      ),
+                    );
 
-                  //관광이후 이동시간
-                  tourSettingDate = tourSettingDate
-                      .add(Duration(minutes: (Random().nextInt(5) + 1) * 10));
+                    //관광이후 이동시간
+                    tourSettingDate = tourSettingDate
+                        .add(Duration(minutes: (Random().nextInt(5) + 1) * 10));
+                  }
+                  //관광지 없으면 밥이나 먹게 무한 이동.
+                  else {
+                    debugPrint("관광지 없어서 여행 넘김");
+
+                    if (eated == 1) {
+                      eated = 2;
+                      tourSettingDate = DateTime(tourSettingDate.year,
+                          tourSettingDate.month, tourSettingDate.day, 16, 0);
+                    } else {
+                      eated = 1;
+                      tourSettingDate = DateTime(tourSettingDate.year,
+                          tourSettingDate.month, tourSettingDate.day, 22, 0);
+                    }
+                  }
                 }
 
                 /////
@@ -377,8 +445,45 @@ class _TourSpotListState extends State<TourSpotList> {
             if (oldIndex < newIndex) {
               newIndex--;
             }
+            final oldEnterTime = finalTourList[oldIndex].enterTime;
+            final oldExitTime = finalTourList[oldIndex].exitTime;
+
+            debugPrint(
+                "${finalTourList[oldIndex].title}, ${finalTourList[newIndex].title}을 바꾼다.");
+
+            //교체시 시간 서로 바꾸게
+            finalTourList[oldIndex] = FinalTourData(
+                title: finalTourList[oldIndex].title,
+                address: finalTourList[oldIndex].address,
+                imageUrl: finalTourList[oldIndex].imageUrl,
+                dist: finalTourList[oldIndex].dist,
+                mapX: finalTourList[oldIndex].mapX,
+                mapY: finalTourList[oldIndex].mapY,
+                contentId: finalTourList[oldIndex].contentId,
+                contentTypeId: finalTourList[oldIndex].contentTypeId,
+                enterTime: finalTourList[newIndex].enterTime,
+                exitTime: finalTourList[newIndex].enterTime,
+                itemKey: finalTourList[oldIndex].itemKey);
+
+            finalTourList[newIndex] = FinalTourData(
+                title: finalTourList[newIndex].title,
+                address: finalTourList[newIndex].address,
+                imageUrl: finalTourList[newIndex].imageUrl,
+                dist: finalTourList[newIndex].dist,
+                mapX: finalTourList[newIndex].mapX,
+                mapY: finalTourList[newIndex].mapY,
+                contentId: finalTourList[newIndex].contentId,
+                contentTypeId: finalTourList[newIndex].contentTypeId,
+                enterTime: oldEnterTime,
+                exitTime: oldExitTime,
+                itemKey: finalTourList[newIndex].itemKey);
+
+            debugPrint("변경전 $oldIndex와 $newIndex");
+
             final item = finalTourList.removeAt(oldIndex);
             finalTourList.insert(newIndex, item);
+            debugPrint(
+                "변경후 $oldIndex와 $newIndex. ${finalTourList[oldIndex].title}");
           },
         );
       },
@@ -412,107 +517,116 @@ class _TourSpotListState extends State<TourSpotList> {
               },
             );
           },
-          child: Card(
-            elevation: 2.0, // 그림자 효과 추가 (선택 사항)
-            margin: const EdgeInsets.all(8.0), // 카드 주위의 여백 (선택 사항)
-            child: Padding(
-              padding: const EdgeInsets.all(10.0), // 내용 주위의 여백 (선택 사항)
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Flexible(
-                    flex: 7,
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        //입장시간
-                        Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: SizedBox(
-                            width: double.infinity,
-                            child: Text(
-                              "${finalTourList[index].enterTime.month}월 ${finalTourList[index].enterTime.day}일 ${finalTourList[index].enterTime.hour}시 ${finalTourList[index].enterTime.minute}분 입장",
-                              textAlign: TextAlign.center,
-                              style: TextStyle(fontSize: 18),
-                            ),
-                          ),
-                        ),
-                        Text(
-                          finalTourList[index].title,
-                          style: const TextStyle(
-                            overflow: TextOverflow.fade,
-                            fontSize: 15.0,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                        const SizedBox(height: 5),
-                        Text(
-                          finalTourList[index].address,
-                          style: const TextStyle(
-                            fontSize: 14.0,
-                          ),
-                        ),
-                        const SizedBox(height: 5),
-                        Container(
-                          padding: const EdgeInsets.all(5),
-                          decoration: BoxDecoration(
-                              color: tourTypeColor(
-                                  finalTourList[index].contentTypeId),
-                              borderRadius:
-                                  const BorderRadius.all(Radius.circular(5))),
-                          child: Text(
-                            tourTypeText(finalTourList[index].contentTypeId),
-                            style: const TextStyle(
-                              color: Colors.white,
-                              fontSize: 16.0,
-                            ),
-                          ),
-                        ),
-
-                        //퇴장시간
-                        Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: SizedBox(
-                            width: double.infinity,
-                            child: Text(
-                              "${finalTourList[index].exitTime.month}월 ${finalTourList[index].exitTime.day}일 ${finalTourList[index].exitTime.hour}시 ${finalTourList[index].exitTime.minute}분 퇴장",
-                              textAlign: TextAlign.center,
-                              style: TextStyle(fontSize: 18),
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                  const SizedBox(width: 10),
-                  SizedBox(
-                    height: 65,
-                    width: 65,
-                    child: Image.network(
-                      finalTourList[index].imageUrl,
-                      fit: BoxFit.cover,
-                      errorBuilder: (BuildContext context, Object exception,
-                          StackTrace? stackTrace) {
-                        // 에러 처리 로직을 여기에 구현
-                        return const Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
+          child: Column(
+            children: [
+              if (index != 0)
+                Text(
+                  "거리 : ${calculateDistance(latStart: finalTourList[index - 1].mapY, lngStart: finalTourList[index - 1].mapX, latEnd: finalTourList[index].mapY, lngEnd: finalTourList[index].mapX)}",
+                ),
+              Card(
+                elevation: 2.0, // 그림자 효과 추가 (선택 사항)
+                margin: const EdgeInsets.all(8.0), // 카드 주위의 여백 (선택 사항)
+                child: Padding(
+                  padding: const EdgeInsets.all(10.0), // 내용 주위의 여백 (선택 사항)
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Flexible(
+                        flex: 7,
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Icon(
-                              Icons.image_not_supported_outlined,
-                              color: mainColor,
+                            //입장시간
+                            Padding(
+                              padding: const EdgeInsets.all(8.0),
+                              child: SizedBox(
+                                width: double.infinity,
+                                child: Text(
+                                  "${finalTourList[index].enterTime.month}월 ${finalTourList[index].enterTime.day}일 ${finalTourList[index].enterTime.hour}시 ${finalTourList[index].enterTime.minute}분 입장",
+                                  textAlign: TextAlign.center,
+                                  style: TextStyle(fontSize: 18),
+                                ),
+                              ),
                             ),
                             Text(
-                              'No Image',
-                              style: TextStyle(color: mainColor),
+                              finalTourList[index].title,
+                              style: const TextStyle(
+                                overflow: TextOverflow.fade,
+                                fontSize: 15.0,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                            const SizedBox(height: 5),
+                            Text(
+                              finalTourList[index].address,
+                              style: const TextStyle(
+                                fontSize: 14.0,
+                              ),
+                            ),
+                            const SizedBox(height: 5),
+                            Container(
+                              padding: const EdgeInsets.all(5),
+                              decoration: BoxDecoration(
+                                  color: tourTypeColor(
+                                      finalTourList[index].contentTypeId),
+                                  borderRadius: const BorderRadius.all(
+                                      Radius.circular(5))),
+                              child: Text(
+                                tourTypeText(
+                                    finalTourList[index].contentTypeId),
+                                style: const TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 16.0,
+                                ),
+                              ),
+                            ),
+
+                            //퇴장시간
+                            Padding(
+                              padding: const EdgeInsets.all(8.0),
+                              child: SizedBox(
+                                width: double.infinity,
+                                child: Text(
+                                  "${finalTourList[index].exitTime.month}월 ${finalTourList[index].exitTime.day}일 ${finalTourList[index].exitTime.hour}시 ${finalTourList[index].exitTime.minute}분 퇴장",
+                                  textAlign: TextAlign.center,
+                                  style: const TextStyle(fontSize: 18),
+                                ),
+                              ),
                             ),
                           ],
-                        );
-                      },
-                    ),
+                        ),
+                      ),
+                      const SizedBox(width: 10),
+                      SizedBox(
+                        height: 65,
+                        width: 65,
+                        child: Image.network(
+                          finalTourList[index].imageUrl,
+                          fit: BoxFit.cover,
+                          errorBuilder: (BuildContext context, Object exception,
+                              StackTrace? stackTrace) {
+                            // 에러 처리 로직을 여기에 구현
+                            return const Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Icon(
+                                  Icons.image_not_supported_outlined,
+                                  color: mainColor,
+                                ),
+                                Text(
+                                  'No Image',
+                                  style: TextStyle(color: mainColor),
+                                ),
+                              ],
+                            );
+                          },
+                        ),
+                      ),
+                    ],
                   ),
-                ],
+                ),
               ),
-            ),
+            ],
           ),
         );
       },

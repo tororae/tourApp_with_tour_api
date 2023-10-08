@@ -6,12 +6,32 @@ import 'package:http/http.dart' as http;
 import 'package:kakao_map_plugin/kakao_map_plugin.dart';
 import 'package:provider/provider.dart';
 import 'package:tour_with_tourapi/main.dart';
+import 'package:tour_with_tourapi/screen/location_base_info.dart';
 import 'package:tour_with_tourapi/setting/secret.dart';
 import 'package:tour_with_tourapi/setting/theme.dart';
 
-Set<Marker> markers = {};
+Set<Marker> markers = {}; //상세정보 보기에서 마커.
 String areaName = ""; //동변환 주소값 담기는 변수
 
+//여행시 목적지들 줄 긋기 위한 배열.
+List<LatLng> tourLine = [];
+
+//여행 최종 목록 지도에 마커와 라인 긋는 함수.
+Widget kakaoMapTourList(context) {
+  return KakaoMap(
+    onMapCreated: ((controller) async {
+      markers.clear();
+      markers.add(Marker(
+        markerId: UniqueKey().toString(),
+        latLng: LatLng(finalTourList[0].mapY, finalTourList[0].mapX),
+      ));
+    }),
+    markers: markers.toList(),
+    center: LatLng(finalTourList[0].mapY, finalTourList[0].mapX),
+  );
+}
+
+//여행일정 설정중 지도 호출시 나오는 화면.
 Widget kakaoMapClickEvent(context) {
   return KakaoMap(
     center: LatLng(currentLatitude, currentLongitude),
@@ -25,11 +45,11 @@ Widget kakaoMapClickEvent(context) {
       );
       getAddress(context,
           latitude: latLng.latitude, longitude: latLng.longitude);
-      debugPrint("너 설마?");
     },
   );
 }
 
+//좌표 받아와서 동변환 해줌.
 Future<String> getAddress(context,
     {required double longitude, required double latitude}) async {
   const String apiUrl =
@@ -63,49 +83,6 @@ Future<String> getAddress(context,
   locationProvider.updatePopupText(
       "${address['region_1depth_name']} ${address['region_2depth_name']} ${address['region_3depth_name']}");
   return "${address['region_1depth_name']} ${address['region_2depth_name']} ${address['region_3depth_name']}";
-}
-
-///좌표 동변환 함수
-Future<String> getAddressNaver(context, position) async {
-  const String apiUrl =
-      "https://naveropenapi.apigw.ntruss.com/map-reversegeocode/v2/gc";
-  String coords = position; // 여기에 입력 좌표 값을 넣으세요
-  const String orders = "legalcode"; // 여기에 변환 작업 이름 값을 넣으세요
-  const String output = "json"; // 여기에 출력 형식 값을 넣으세요
-  const String apiKeyId = naverMapApiKey;
-  const String apiKeySecret = naverMapApiSecret;
-
-  final response = await http.get(
-    Uri.parse("$apiUrl?coords=$coords&orders=$orders&output=$output"),
-    headers: {
-      "X-NCP-APIGW-API-KEY-ID": apiKeyId,
-      "X-NCP-APIGW-API-KEY": apiKeySecret,
-    },
-  );
-
-  if (response.statusCode == 200) {
-    // JSON 응답 파싱
-    final Map<String, dynamic> data = json.decode(response.body);
-    final locationProvider =
-        Provider.of<LocationProvider>(context, listen: false);
-    if (data["status"]["code"] == 0) {
-      final area = data["results"][0]["region"];
-      areaName =
-          "${area["area1"]["name"]} ${area["area2"]["name"]} ${area["area3"]["name"]} ${area["area4"]["name"]}";
-      debugPrint("$areaName은 출력됨.");
-
-      locationProvider.updatePopupText(areaName);
-      return areaName;
-    } else {
-      locationProvider.updatePopupText("주소가 없는 장소에요");
-
-      return "주소가 없는 장소에요";
-    }
-  } else {
-    // 요청 실패 처리
-    debugPrint("Failed to load data: ${response.statusCode}");
-    return "";
-  }
 }
 
 ///지도 클릭시 팝업화면
