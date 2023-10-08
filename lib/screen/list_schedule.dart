@@ -95,9 +95,30 @@ class _ScheduleListState extends State<ScheduleList> {
             () {
               //eated 0:식사 X 1:점심먹은상태 2:저녁먹은상태
               int eated = 0;
+              String visitedContentsID = ""; //같은곳 연속방문시 체크하기 위함. 연속방문시 시간 연장.
               finalTourList.clear();
 
               for (int i = 0; i < 30; i++) {
+                //만약 여행일정의 끝시간을 넘었다면, 끝시간으로 마지막 일정 바꾸고 종료.
+                if (tourSettingDate.isAfter(widget.endDate)) {
+                  debugPrint(
+                      "날짜 만료됨.${widget.endDate}. ${finalTourList.length} 만들었어.");
+                  final lastIndex = finalTourList.length - 1;
+                  finalTourList[lastIndex] = FinalTourData(
+                    title: finalTourList[lastIndex].title,
+                    address: finalTourList[lastIndex].address,
+                    imageUrl: finalTourList[lastIndex].imageUrl,
+                    dist: finalTourList[lastIndex].dist,
+                    mapX: finalTourList[lastIndex].mapX,
+                    mapY: finalTourList[lastIndex].mapY,
+                    contentId: finalTourList[lastIndex].contentId,
+                    contentTypeId: finalTourList[lastIndex].contentTypeId,
+                    enterTime: finalTourList[lastIndex].enterTime,
+                    exitTime: widget.endDate,
+                    itemKey: finalTourList[lastIndex].itemKey,
+                  );
+                  break;
+                }
                 //밤이 늦어 자러가는 상황
                 if (tourSettingDate.hour > 21 || tourSettingDate.hour < 7) {
                   //숙소가 있어야 실행.
@@ -119,8 +140,12 @@ class _ScheduleListState extends State<ScheduleList> {
                     }
                     //그냥 늦은입실이면 11시까지 자게 두자.
                     else {
-                      tourSettingDate = DateTime(tourSettingDate.year,
-                          tourSettingDate.month, tourSettingDate.day, 11, 0);
+                      tourSettingDate = DateTime(
+                          tourSettingDate.year,
+                          tourSettingDate.month,
+                          tourSettingDate.day + 1,
+                          11,
+                          0);
                     }
                     tourExitDate = tourSettingDate;
 
@@ -150,7 +175,7 @@ class _ScheduleListState extends State<ScheduleList> {
                     debugPrint("숙소가 없어서 숙박 넘김");
 
                     tourSettingDate = DateTime(tourSettingDate.year,
-                        tourSettingDate.month, tourSettingDate.day, 7, 0);
+                        tourSettingDate.month, tourSettingDate.day + 1, 7, 0);
                   }
                 }
 
@@ -253,22 +278,41 @@ class _ScheduleListState extends State<ScheduleList> {
                     tourSettingDate = tourSettingDate
                         .add(Duration(hours: Random().nextInt(2) + 1));
                     tourExitDate = tourSettingDate;
-
-                    finalTourList.add(
-                      FinalTourData(
-                        title: tourList[randomTour].title,
-                        address: tourList[randomTour].address,
-                        imageUrl: tourList[randomTour].imageUrl,
-                        dist: tourList[randomTour].dist,
-                        mapX: tourList[randomTour].mapX,
-                        mapY: tourList[randomTour].mapY,
-                        contentId: tourList[randomTour].contentId,
-                        contentTypeId: tourList[randomTour].contentTypeId,
-                        enterTime: tourEnterDate,
+                    if (tourList[randomTour].contentId == visitedContentsID) {
+                      debugPrint("드가다 죽어여.");
+                      final int lastIndex = finalTourList.length - 1;
+                      finalTourList[lastIndex] = FinalTourData(
+                        title: finalTourList[lastIndex].title,
+                        address: finalTourList[lastIndex].address,
+                        imageUrl: finalTourList[lastIndex].imageUrl,
+                        dist: finalTourList[lastIndex].dist,
+                        mapX: finalTourList[lastIndex].mapX,
+                        mapY: finalTourList[lastIndex].mapY,
+                        contentId: finalTourList[lastIndex].contentId,
+                        contentTypeId: finalTourList[lastIndex].contentTypeId,
+                        enterTime: finalTourList[lastIndex].enterTime,
                         exitTime: tourExitDate,
-                        itemKey: UniqueKey(),
-                      ),
-                    );
+                        itemKey: finalTourList[lastIndex].itemKey,
+                      );
+                    } else {
+                      visitedContentsID = tourList[randomTour].contentId;
+
+                      finalTourList.add(
+                        FinalTourData(
+                          title: tourList[randomTour].title,
+                          address: tourList[randomTour].address,
+                          imageUrl: tourList[randomTour].imageUrl,
+                          dist: tourList[randomTour].dist,
+                          mapX: tourList[randomTour].mapX,
+                          mapY: tourList[randomTour].mapY,
+                          contentId: tourList[randomTour].contentId,
+                          contentTypeId: tourList[randomTour].contentTypeId,
+                          enterTime: tourEnterDate,
+                          exitTime: tourExitDate,
+                          itemKey: UniqueKey(),
+                        ),
+                      );
+                    }
 
                     //관광이후 이동시간
                     tourSettingDate = tourSettingDate

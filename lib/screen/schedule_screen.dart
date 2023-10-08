@@ -23,7 +23,7 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
   final TextEditingController _searchRangeController = TextEditingController();
 
   DateTime _startDate = DateTime.now();
-  DateTime _endDate = DateTime.now();
+  DateTime _endDate = DateTime.now().add(const Duration(days: 1));
 
   dayApply(bool isStart) {
     setState(() {
