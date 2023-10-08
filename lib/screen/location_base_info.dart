@@ -9,6 +9,7 @@ List<dynamic> locationList = [];
 List<dynamic> foodList = [];
 List<dynamic> tourList = [];
 List<dynamic> sleepList = [];
+List<dynamic> finalTourList = [];
 bool isInfoLoading = false;
 
 //위치기반 정보 api 호출받아서 넣을 모델클래스 선언
@@ -32,6 +33,35 @@ class LocationData {
     required this.mapY,
     required this.contentId,
     required this.contentTypeId,
+    required this.itemKey,
+  });
+}
+
+//시간이 포함된 최종 관광리스트 모델클래스
+class FinalTourData {
+  final String title;
+  final String address;
+  final String imageUrl;
+  final double dist;
+  final double mapX;
+  final double mapY;
+  final String contentId;
+  final String contentTypeId;
+  final DateTime enterTime;
+  final DateTime exitTime;
+  final Key itemKey;
+
+  FinalTourData({
+    required this.title,
+    required this.address,
+    required this.imageUrl,
+    required this.dist,
+    required this.mapX,
+    required this.mapY,
+    required this.contentId,
+    required this.contentTypeId,
+    required this.enterTime,
+    required this.exitTime,
     required this.itemKey,
   });
 }

@@ -69,6 +69,8 @@ class _ScheduleListState extends State<ScheduleList> {
   void didChangeDependencies() {
     super.didChangeDependencies();
     DateTime tourSettingDate = widget.startDate;
+    DateTime tourEnterDate;
+    DateTime tourExitDate;
 
     _isProgressing = true;
     // 이전 화면에서 돌아올 때마다 데이터를 다시 불러오고 화면을 갱신합니다.
@@ -82,6 +84,10 @@ class _ScheduleListState extends State<ScheduleList> {
                 //밤이 늦어 자러가는 상황
                 if (tourSettingDate.hour > 21 || tourSettingDate.hour < 7) {
                   randomTour = Random().nextInt(sleepList.length);
+
+                  //입장시간 저장 루틴
+                  tourEnterDate = tourSettingDate;
+
                   debugPrint(
                       "${tourSettingDate.hour}시 ${tourSettingDate.minute}분. ${sleepList[randomTour].title}로 자러간다.");
 
