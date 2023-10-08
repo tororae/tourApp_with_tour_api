@@ -21,6 +21,7 @@ class LocationData {
   final double mapY;
   final String contentId;
   final String contentTypeId;
+  final Key itemKey;
 
   LocationData({
     required this.title,
@@ -31,6 +32,7 @@ class LocationData {
     required this.mapY,
     required this.contentId,
     required this.contentTypeId,
+    required this.itemKey,
   });
 }
 
@@ -62,6 +64,7 @@ Future<void> getLocationBasedData(apiUrl) async {
             dist: double.parse(item['dist']),
             mapX: double.parse(item['mapx'] ?? "0"),
             mapY: double.parse(item['mapy'] ?? "0"),
+            itemKey: ValueKey(item),
           ),
         );
 
@@ -77,6 +80,7 @@ Future<void> getLocationBasedData(apiUrl) async {
               dist: double.parse(item['dist']),
               mapX: double.parse(item['mapx'] ?? "0"),
               mapY: double.parse(item['mapy'] ?? "0"),
+              itemKey: ValueKey(item),
             ),
           );
         } else if (item['contenttypeid'] == "39") {
@@ -91,6 +95,7 @@ Future<void> getLocationBasedData(apiUrl) async {
               dist: double.parse(item['dist']),
               mapX: double.parse(item['mapx'] ?? "0"),
               mapY: double.parse(item['mapy'] ?? "0"),
+              itemKey: ValueKey(item),
             ),
           );
         } else {
@@ -104,6 +109,7 @@ Future<void> getLocationBasedData(apiUrl) async {
               dist: double.parse(item['dist']),
               mapX: double.parse(item['mapx'] ?? "0"),
               mapY: double.parse(item['mapy'] ?? "0"),
+              itemKey: ValueKey(item),
             ),
           );
         }

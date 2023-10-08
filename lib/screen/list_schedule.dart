@@ -78,7 +78,7 @@ class _ScheduleListState extends State<ScheduleList> {
           //화면이 없을때 setState 하면 에러남. 이를 막기 위해 mounted 되어있는지 확인하고 진행.
           setState(
             () {
-              for (int i = 0; i < 10; i++) {
+              for (int i = 0; i < 30; i++) {
                 //밤이 늦어 자러가는 상황
                 if (tourSettingDate.hour > 21 || tourSettingDate.hour < 7) {
                   randomTour = Random().nextInt(sleepList.length);
@@ -271,17 +271,34 @@ String contentIdValue = "";
 String contentTypeIdValue = "";
 
 //리스트 내 들어가는 관광지들 목록
-class TourSpotList extends StatelessWidget {
+class TourSpotList extends StatefulWidget {
   const TourSpotList({
     super.key,
   });
 
   @override
+  State<TourSpotList> createState() => _TourSpotListState();
+}
+
+class _TourSpotListState extends State<TourSpotList> {
+  @override
   Widget build(BuildContext context) {
-    return ListView.builder(
+    return ReorderableListView.builder(
+      onReorder: (oldIndex, newIndex) {
+        setState(
+          () {
+            if (oldIndex < newIndex) {
+              newIndex--;
+            }
+            final item = locationList.removeAt(oldIndex);
+            locationList.insert(newIndex, item);
+          },
+        );
+      },
       itemCount: locationList.length,
       itemBuilder: (BuildContext context, int index) {
         return InkWell(
+          key: locationList[index].itemKey,
           onTap: () {
             contentIdValue = locationList[index].contentId;
             contentTypeIdValue = locationList[index].contentTypeId;
@@ -301,7 +318,7 @@ class TourSpotList extends StatelessWidget {
                   mapY: locationList[index].mapY,
                   title: locationList[index].title,
                   imageUrl: locationList[index].imageUrl,
-                  key: key,
+                  // key: key,
                 );
               },
             );
