@@ -80,6 +80,9 @@ class _ScheduleListState extends State<ScheduleList> {
           //화면이 없을때 setState 하면 에러남. 이를 막기 위해 mounted 되어있는지 확인하고 진행.
           setState(
             () {
+              //eated 0:식사 X 1:점심먹은상태 2:저녁먹은상태
+              int eated = 0;
+
               for (int i = 0; i < 30; i++) {
                 //밤이 늦어 자러가는 상황
                 if (tourSettingDate.hour > 21 || tourSettingDate.hour < 7) {
@@ -117,14 +120,18 @@ class _ScheduleListState extends State<ScheduleList> {
                       enterTime: tourEnterDate,
                       exitTime: tourExitDate,
                       itemKey: sleepList[randomTour].itemKey));
-
+                  //취침후 이동시간
+                  tourSettingDate = tourSettingDate
+                      .add(Duration(minutes: (Random().nextInt(5) + 1) * 10));
                   debugPrint(
                       "${tourSettingDate.hour}시 ${tourSettingDate.minute}분. ${sleepList[randomTour].title}에서 기상 완료.");
                 }
 
                 //11시~1시 사이 점심식사
                 else if (tourSettingDate.hour >= 11 &&
-                    tourSettingDate.hour < 13) {
+                    tourSettingDate.hour < 13 &&
+                    eated != 1) {
+                  eated = 1;
                   randomTour = Random().nextInt(foodList.length);
                   debugPrint(
                       "${tourSettingDate.hour}시 ${tourSettingDate.minute}분. ${foodList[randomTour].title} 점심식사.");
@@ -147,11 +154,16 @@ class _ScheduleListState extends State<ScheduleList> {
                       enterTime: tourEnterDate,
                       exitTime: tourExitDate,
                       itemKey: foodList[randomTour].itemKey));
+                  //식사후 이동시간
+                  tourSettingDate = tourSettingDate
+                      .add(Duration(minutes: (Random().nextInt(5) + 1) * 10));
                 }
 
                 //18시~19시 사이 저녁식사
                 else if (tourSettingDate.hour >= 18 &&
-                    tourSettingDate.hour <= 19) {
+                    tourSettingDate.hour <= 19 &&
+                    eated != 2) {
+                  eated = 2;
                   randomTour = Random().nextInt(foodList.length);
                   debugPrint(
                       "${tourSettingDate.hour}시 ${tourSettingDate.minute}분. ${foodList[randomTour].title} 저녁식사.");
@@ -174,6 +186,10 @@ class _ScheduleListState extends State<ScheduleList> {
                       enterTime: tourEnterDate,
                       exitTime: tourExitDate,
                       itemKey: foodList[randomTour].itemKey));
+
+                  //식사후 이동시간
+                  tourSettingDate = tourSettingDate
+                      .add(Duration(minutes: (Random().nextInt(5) + 1) * 10));
                 } else {
                   randomTour = Random().nextInt(tourList.length);
 
@@ -201,7 +217,7 @@ class _ScheduleListState extends State<ScheduleList> {
                       exitTime: tourExitDate,
                       itemKey: tourList[randomTour].itemKey));
 
-//관광이후 이동시간
+                  //관광이후 이동시간
                   tourSettingDate = tourSettingDate
                       .add(Duration(minutes: (Random().nextInt(5) + 1) * 10));
                 }
@@ -242,7 +258,7 @@ class _ScheduleListState extends State<ScheduleList> {
                 ],
               ),
             )
-          : locationList.isEmpty
+          : finalTourList.isEmpty
               ? Center(
                   // 데이터가 없는 경우 표시할 위젯
                   child: Column(
@@ -282,7 +298,7 @@ class _ScheduleListState extends State<ScheduleList> {
               : SafeArea(
                   child: Column(
                     children: [
-                      Text("${locationList.length}개의 검색결과가 있습니다."),
+                      Text("${finalTourList.length}개의 검색결과가 있습니다."),
                       const Expanded(child: TourSpotList()),
                       Padding(
                         padding: const EdgeInsets.all(8.0),
@@ -296,7 +312,7 @@ class _ScheduleListState extends State<ScheduleList> {
                                 "종료일시 - ${DateFormat('yyyy.MM.dd. HH:mm').format(widget.endDate)}");
                             int listNum = 0;
                             String dataForSendGPT = tourSetting;
-                            for (var element in locationList) {
+                            for (var element in finalTourList) {
                               listNum++;
                               dataForSendGPT =
                                   "$dataForSendGPT i:$listNum name:${element.title}, code:${element.contentTypeId}, location:${element.mapX},${element.mapY}.\n";
@@ -361,34 +377,36 @@ class _TourSpotListState extends State<TourSpotList> {
             if (oldIndex < newIndex) {
               newIndex--;
             }
-            final item = locationList.removeAt(oldIndex);
-            locationList.insert(newIndex, item);
+            final item = finalTourList.removeAt(oldIndex);
+            finalTourList.insert(newIndex, item);
           },
         );
       },
-      itemCount: locationList.length,
+      itemCount: finalTourList.length,
       itemBuilder: (BuildContext context, int index) {
         return InkWell(
-          key: locationList[index].itemKey,
+          key: finalTourList[index].itemKey,
           onTap: () {
-            contentIdValue = locationList[index].contentId;
-            contentTypeIdValue = locationList[index].contentTypeId;
+            contentIdValue = finalTourList[index].contentId;
+            contentTypeIdValue = finalTourList[index].contentTypeId;
 
             calculateDistance(
                 latStart: currentLatitude,
                 lngStart: currentLongitude,
-                latEnd: locationList[index].mapY,
-                lngEnd: locationList[index].mapX);
+                latEnd: finalTourList[index].mapY,
+                lngEnd: finalTourList[index].mapX);
 
             showDialog(
               context: context,
               builder: (context) {
                 return DetailInfoDialog(
-                  address: locationList[index].address,
-                  mapX: locationList[index].mapX,
-                  mapY: locationList[index].mapY,
-                  title: locationList[index].title,
-                  imageUrl: locationList[index].imageUrl,
+                  address: finalTourList[index].address,
+                  mapX: finalTourList[index].mapX,
+                  mapY: finalTourList[index].mapY,
+                  enterTime: finalTourList[index].enterTime,
+                  exitTime: finalTourList[index].exitTime,
+                  title: finalTourList[index].title,
+                  imageUrl: finalTourList[index].imageUrl,
                   // key: key,
                 );
               },
@@ -407,8 +425,20 @@ class _TourSpotListState extends State<TourSpotList> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
+                        //입장시간
+                        Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: SizedBox(
+                            width: double.infinity,
+                            child: Text(
+                              "${finalTourList[index].enterTime.month}월 ${finalTourList[index].enterTime.day}일 ${finalTourList[index].enterTime.hour}시 ${finalTourList[index].enterTime.minute}분 입장",
+                              textAlign: TextAlign.center,
+                              style: TextStyle(fontSize: 18),
+                            ),
+                          ),
+                        ),
                         Text(
-                          locationList[index].title,
+                          finalTourList[index].title,
                           style: const TextStyle(
                             overflow: TextOverflow.fade,
                             fontSize: 15.0,
@@ -417,7 +447,7 @@ class _TourSpotListState extends State<TourSpotList> {
                         ),
                         const SizedBox(height: 5),
                         Text(
-                          locationList[index].address,
+                          finalTourList[index].address,
                           style: const TextStyle(
                             fontSize: 14.0,
                           ),
@@ -427,14 +457,27 @@ class _TourSpotListState extends State<TourSpotList> {
                           padding: const EdgeInsets.all(5),
                           decoration: BoxDecoration(
                               color: tourTypeColor(
-                                  locationList[index].contentTypeId),
+                                  finalTourList[index].contentTypeId),
                               borderRadius:
                                   const BorderRadius.all(Radius.circular(5))),
                           child: Text(
-                            tourTypeText(locationList[index].contentTypeId),
+                            tourTypeText(finalTourList[index].contentTypeId),
                             style: const TextStyle(
                               color: Colors.white,
                               fontSize: 16.0,
+                            ),
+                          ),
+                        ),
+
+                        //퇴장시간
+                        Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: SizedBox(
+                            width: double.infinity,
+                            child: Text(
+                              "${finalTourList[index].exitTime.month}월 ${finalTourList[index].exitTime.day}일 ${finalTourList[index].exitTime.hour}시 ${finalTourList[index].exitTime.minute}분 퇴장",
+                              textAlign: TextAlign.center,
+                              style: TextStyle(fontSize: 18),
                             ),
                           ),
                         ),
@@ -446,7 +489,7 @@ class _TourSpotListState extends State<TourSpotList> {
                     height: 65,
                     width: 65,
                     child: Image.network(
-                      locationList[index].imageUrl,
+                      finalTourList[index].imageUrl,
                       fit: BoxFit.cover,
                       errorBuilder: (BuildContext context, Object exception,
                           StackTrace? stackTrace) {
@@ -483,6 +526,9 @@ class DetailInfoDialog extends StatefulWidget {
   final String address;
   final double mapX;
   final double mapY;
+  final DateTime enterTime;
+  final DateTime exitTime;
+
   final String imageUrl;
   const DetailInfoDialog({
     required this.title,
@@ -490,6 +536,8 @@ class DetailInfoDialog extends StatefulWidget {
     required this.address,
     required this.mapX,
     required this.mapY,
+    required this.enterTime,
+    required this.exitTime,
     required this.imageUrl,
   });
 
