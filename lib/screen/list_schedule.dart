@@ -539,12 +539,6 @@ class _TourSpotListState extends State<TourSpotList> {
             contentIdValue = finalTourList[index].contentId;
             contentTypeIdValue = finalTourList[index].contentTypeId;
 
-            calculateDistance(
-                latStart: currentLatitude,
-                lngStart: currentLongitude,
-                latEnd: finalTourList[index].mapY,
-                lngEnd: finalTourList[index].mapX);
-
             showDialog(
               context: context,
               builder: (context) {
@@ -583,12 +577,70 @@ class _TourSpotListState extends State<TourSpotList> {
                             //입장시간
                             Padding(
                               padding: const EdgeInsets.all(8.0),
-                              child: SizedBox(
-                                width: double.infinity,
-                                child: Text(
-                                  "${finalTourList[index].enterTime.month}월 ${finalTourList[index].enterTime.day}일 ${finalTourList[index].enterTime.hour}시 ${finalTourList[index].enterTime.minute}분 입장",
-                                  textAlign: TextAlign.center,
-                                  style: TextStyle(fontSize: 18),
+                              child: SingleChildScrollView(
+                                scrollDirection: Axis.horizontal,
+                                child: Row(
+                                  children: [
+                                    Container(
+                                      padding: const EdgeInsets.symmetric(
+                                        horizontal: 6,
+                                        vertical: 5,
+                                      ),
+                                      decoration: BoxDecoration(
+                                        border: Border.all(color: mainColor),
+                                        borderRadius: BorderRadius.circular(15),
+                                      ),
+                                      child: Column(
+                                        children: [
+                                          const Text(
+                                            "IN",
+                                            style: TextStyle(
+                                              color: mainColor,
+                                              fontSize: 20,
+                                              fontWeight: FontWeight.bold,
+                                            ),
+                                          ),
+                                          Text(
+                                            "${finalTourList[index].enterTime.month}/${finalTourList[index].enterTime.day} ${finalTourList[index].enterTime.hour}:${finalTourList[index].enterTime.minute}",
+                                            textAlign: TextAlign.center,
+                                            style:
+                                                const TextStyle(fontSize: 18),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                    const SizedBox(
+                                      width: 10,
+                                    ),
+                                    Container(
+                                      padding: const EdgeInsets.symmetric(
+                                        horizontal: 6,
+                                        vertical: 5,
+                                      ),
+                                      decoration: BoxDecoration(
+                                        border: Border.all(color: mainColor),
+                                        borderRadius: BorderRadius.circular(15),
+                                      ),
+                                      child: Column(
+                                        children: [
+                                          const Text(
+                                            "OUT",
+                                            style: TextStyle(
+                                              color: mainColor,
+                                              fontSize: 20,
+                                              fontWeight: FontWeight.bold,
+                                            ),
+                                          ),
+                                          Text(
+                                            "${finalTourList[index].exitTime.month}/${finalTourList[index].exitTime.day} ${finalTourList[index].exitTime.hour}:${finalTourList[index].exitTime.minute}",
+                                            textAlign: TextAlign.center,
+                                            style:
+                                                const TextStyle(fontSize: 18),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  ],
                                 ),
                               ),
                             ),
@@ -624,46 +676,48 @@ class _TourSpotListState extends State<TourSpotList> {
                                 ),
                               ),
                             ),
-
-                            //퇴장시간
-                            Padding(
-                              padding: const EdgeInsets.all(8.0),
-                              child: SizedBox(
-                                width: double.infinity,
-                                child: Text(
-                                  "${finalTourList[index].exitTime.month}월 ${finalTourList[index].exitTime.day}일 ${finalTourList[index].exitTime.hour}시 ${finalTourList[index].exitTime.minute}분 퇴장",
-                                  textAlign: TextAlign.center,
-                                  style: const TextStyle(fontSize: 18),
-                                ),
-                              ),
-                            ),
                           ],
                         ),
                       ),
                       const SizedBox(width: 10),
                       SizedBox(
-                        height: 65,
                         width: 65,
-                        child: Image.network(
-                          finalTourList[index].imageUrl,
-                          fit: BoxFit.cover,
-                          errorBuilder: (BuildContext context, Object exception,
-                              StackTrace? stackTrace) {
-                            // 에러 처리 로직을 여기에 구현
-                            return const Column(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                Icon(
-                                  Icons.image_not_supported_outlined,
-                                  color: mainColor,
-                                ),
-                                Text(
-                                  'No Image',
-                                  style: TextStyle(color: mainColor),
-                                ),
-                              ],
-                            );
-                          },
+                        child: Column(
+                          children: [
+                            Image.network(
+                              finalTourList[index].imageUrl,
+                              fit: BoxFit.cover,
+                              errorBuilder: (BuildContext context,
+                                  Object exception, StackTrace? stackTrace) {
+                                // 에러 처리 로직을 여기에 구현
+                                return const Column(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Icon(
+                                      Icons.image_not_supported_outlined,
+                                      color: mainColor,
+                                    ),
+                                    Text(
+                                      'No Image',
+                                      style: TextStyle(color: mainColor),
+                                    ),
+                                  ],
+                                );
+                              },
+                            ),
+                            SizedBox(
+                              height: 10,
+                            ),
+                            InkWell(
+                              onTap: () {
+                                debugPrint("$index 번째를 눌렀다.");
+                              },
+                              child: Icon(
+                                Icons.delete_forever_rounded,
+                                color: mainColor,
+                              ),
+                            ),
+                          ],
                         ),
                       ),
                     ],

@@ -348,7 +348,9 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
                     const Duration(minutes: 1),
                   ),
                   maximumYear: DateTime.now().year + 1,
-                  initialDateTime: _temporaryDate,
+                  initialDateTime: _temporaryDate.isBefore(DateTime.now())
+                      ? DateTime.now().add(const Duration(minutes: 1))
+                      : _temporaryDate,
                   mode: CupertinoDatePickerMode.date,
                   showDayOfWeek: true,
                   // This is called when the user changes the date.
@@ -400,7 +402,12 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
                 height: 400,
                 child: CupertinoDatePicker(
                   itemExtent: 40,
-                  initialDateTime: _temporaryDate,
+                  initialDateTime: _temporaryDate.isBefore(DateTime.now())
+                      ? DateTime.now()
+                      : _temporaryDate,
+                  minimumDate: DateTime.now().subtract(
+                    const Duration(minutes: 1),
+                  ),
                   mode: CupertinoDatePickerMode.time,
                   use24hFormat: true,
                   onDateTimeChanged: (DateTime newDate) {
