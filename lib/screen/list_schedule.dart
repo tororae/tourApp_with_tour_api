@@ -424,20 +424,42 @@ class _ScheduleListState extends State<ScheduleList> {
               : SafeArea(
                   child: Column(
                     children: [
-                      Text("${finalTourList.length}개의 검색결과가 있습니다."),
-                      IconButton(
-                        onPressed: () {
-                          insertRoute();
-                          showDialog(
-                            context: context,
-                            builder: (context) {
-                              return const KakaoMapTourList();
+                      const SizedBox(height: 10),
+                      // Text("AI 검색 결과\n${finalTourList.length} 방문을 추천합니다."),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.end,
+                        children: [
+                          InkWell(
+                            onTap: () {
+                              insertRoute();
+                              showDialog(
+                                context: context,
+                                builder: (context) {
+                                  return const KakaoMapTourList();
+                                },
+                              );
                             },
-                          );
-                        },
-                        icon: const Icon(Icons.route, color: mainColor),
-                        color: mainColor,
+                            child: Container(
+                              padding: EdgeInsets.all(5),
+                              decoration: BoxDecoration(
+                                border: Border.all(color: mainColor, width: 2),
+                                borderRadius: const BorderRadius.all(
+                                  Radius.circular(10),
+                                ),
+                              ),
+                              child: const Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  Text("여행경로 보기"),
+                                  Icon(Icons.route, color: mainColor),
+                                ],
+                              ),
+                            ),
+                          ),
+                        ],
                       ),
+                      const SizedBox(height: 10),
+
                       const Expanded(child: TourSpotList()),
                       Padding(
                         padding: const EdgeInsets.all(8.0),
