@@ -60,6 +60,20 @@ class ScheduleList extends StatefulWidget {
   State<ScheduleList> createState() => _ScheduleListState();
 }
 
+//지도에 그을 선을 담는 함수. 겸사겸사 경로의 중간 길이도 계산시키자.
+void insertRoute() {
+  tourLine.clear();
+  double sumX = 0;
+  double sumY = 0;
+  for (var item in finalTourList) {
+    tourLine.add(LatLng(item.mapY, item.mapX));
+    sumX += item.mapX;
+    sumY += item.mapY;
+  }
+  centerOfList =
+      LatLng(sumY / finalTourList.length, sumX / finalTourList.length);
+}
+
 class _ScheduleListState extends State<ScheduleList> {
   bool _isProgressing = false;
   late int randomTour;
@@ -411,6 +425,19 @@ class _ScheduleListState extends State<ScheduleList> {
                   child: Column(
                     children: [
                       Text("${finalTourList.length}개의 검색결과가 있습니다."),
+                      IconButton(
+                        onPressed: () {
+                          insertRoute();
+                          showDialog(
+                            context: context,
+                            builder: (context) {
+                              return const KakaoMapTourList();
+                            },
+                          );
+                        },
+                        icon: const Icon(Icons.route, color: mainColor),
+                        color: mainColor,
+                      ),
                       const Expanded(child: TourSpotList()),
                       Padding(
                         padding: const EdgeInsets.all(8.0),
@@ -535,10 +562,11 @@ class _TourSpotListState extends State<TourSpotList> {
       itemBuilder: (BuildContext context, int index) {
         return InkWell(
           key: finalTourList[index].itemKey,
+
+          //클릭시 상세정보 보여주는 부분
           onTap: () {
             contentIdValue = finalTourList[index].contentId;
             contentTypeIdValue = finalTourList[index].contentTypeId;
-
             showDialog(
               context: context,
               builder: (context) {

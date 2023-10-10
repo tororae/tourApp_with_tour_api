@@ -15,20 +15,65 @@ String areaName = ""; //동변환 주소값 담기는 변수
 
 //여행시 목적지들 줄 긋기 위한 배열.
 List<LatLng> tourLine = [];
+List<Polyline> polylines = [];
+
+late LatLng centerOfList;
 
 //여행 최종 목록 지도에 마커와 라인 긋는 함수.
-Widget kakaoMapTourList(context) {
-  return KakaoMap(
-    onMapCreated: ((controller) async {
-      markers.clear();
-      markers.add(Marker(
-        markerId: UniqueKey().toString(),
-        latLng: LatLng(finalTourList[0].mapY, finalTourList[0].mapX),
-      ));
-    }),
-    markers: markers.toList(),
-    center: LatLng(finalTourList[0].mapY, finalTourList[0].mapX),
-  );
+
+class KakaoMapTourList extends StatefulWidget {
+  const KakaoMapTourList({super.key});
+
+  @override
+  State<KakaoMapTourList> createState() => _KakaoMapTourListState();
+}
+
+class _KakaoMapTourListState extends State<KakaoMapTourList> {
+  @override
+  Widget build(BuildContext context) {
+    return KakaoMap(
+      onMapCreated: ((controller) async {
+        polylines.clear();
+        markers.clear();
+        int index = 0;
+        for (var item in tourLine) {
+          index++;
+          markers.add(
+            Marker(
+              markerId: UniqueKey().toString(),
+              latLng: item,
+              infoWindowContent: " $index. ${finalTourList[index - 1].title}",
+              infoWindowFirstShow: true,
+              infoWindowRemovable: false,
+            ),
+          );
+        }
+
+        polylines.add(
+          Polyline(
+            polylineId: 'tourPolyline',
+            points: tourLine,
+            strokeColor: mainColor,
+            strokeOpacity: 0.5,
+          ),
+        );
+        debugPrint("${polylines.length} 이 배열의 길이다. ${tourLine.length}");
+        for (var mypoint in tourLine) {
+          debugPrint("$mypoint  가 포인트들이야.");
+        }
+        debugPrint("${finalTourList[0].mapY} , ${finalTourList[0].mapX}");
+
+        setState(() {
+          controller
+              .setCenter(LatLng(finalTourList[0].mapY, finalTourList[0].mapX));
+        });
+      }),
+      polylines: polylines,
+      markers: markers.toList(),
+      // center: LatLng(finalTourList[0].mapY, finalTourList[0].mapX),/
+      //만약 전체 위치의 가운데로 하려면, centerOfList 쓰자.
+    );
+  }
 }
 
 //여행일정 설정중 지도 호출시 나오는 화면.
