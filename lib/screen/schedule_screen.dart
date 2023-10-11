@@ -304,7 +304,7 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
                           borderRadius: BorderRadius.circular(5),
                         ),
                         child: const Text(
-                          '추천여행지 목록보기',
+                          'AI 일정 만들기',
                           style: TextStyle(
                             color: Colors.white,
                           ),

@@ -608,15 +608,41 @@ class _TourSpotListState extends State<TourSpotList> {
           child: Column(
             children: [
               if (index != 0)
-                Text(
-                  "거리 : ${calculateDistance(latStart: finalTourList[index - 1].mapY, lngStart: finalTourList[index - 1].mapX, latEnd: finalTourList[index].mapY, lngEnd: finalTourList[index].mapX)}",
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: [
+                    Text(
+                      spotDurationCalc(index),
+                      textAlign: TextAlign.center,
+                      style: const TextStyle(
+                          color: mainColor, fontWeight: FontWeight.bold),
+                    ),
+                    const Card(
+                      elevation: 5,
+                      child: Padding(
+                        padding:
+                            EdgeInsets.symmetric(horizontal: 30, vertical: 5),
+                        child: Icon(
+                          Icons.add_location_alt_outlined,
+                          color: mainColor,
+                        ),
+                      ),
+                    ),
+                    Text(
+                      "목적지 거리\n${calculateDistance(latStart: finalTourList[index - 1].mapY, lngStart: finalTourList[index - 1].mapX, latEnd: finalTourList[index].mapY, lngEnd: finalTourList[index].mapX)}",
+                      style: const TextStyle(
+                          color: mainColor, fontWeight: FontWeight.bold),
+                      textAlign: TextAlign.center,
+                    ),
+                  ],
                 ),
               Card(
-                elevation: 2.0, // 그림자 효과 추가 (선택 사항)
+                elevation: 10, // 그림자 효과 추가 (선택 사항)
                 margin: const EdgeInsets.all(8.0), // 카드 주위의 여백 (선택 사항)
                 child: Padding(
                   padding: const EdgeInsets.all(10.0), // 내용 주위의 여백 (선택 사항)
                   child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     mainAxisSize: MainAxisSize.max,
                     children: [
@@ -627,7 +653,7 @@ class _TourSpotListState extends State<TourSpotList> {
                           crossAxisAlignment: CrossAxisAlignment.center,
                           children: [
                             Text(
-                              finalTourList[index].title,
+                              "${index + 1}. ${finalTourList[index].title}",
                               style: const TextStyle(
                                 overflow: TextOverflow.fade,
                                 fontSize: 15.0,
@@ -718,6 +744,9 @@ class _TourSpotListState extends State<TourSpotList> {
                           ],
                         ),
                       ),
+                      const SizedBox(
+                        width: 15,
+                      ),
                       Flexible(
                         flex: 3,
                         child: Column(
@@ -765,6 +794,7 @@ class _TourSpotListState extends State<TourSpotList> {
                                 },
                               ),
                             ),
+                            const SizedBox(height: 10),
                             InkWell(
                               onTap: () {
                                 debugPrint("$index 번째를 눌렀다.");
@@ -772,10 +802,28 @@ class _TourSpotListState extends State<TourSpotList> {
                                   finalTourList.removeAt(index);
                                 });
                               },
-                              child: const Icon(
-                                Icons.delete_forever_rounded,
-                                color: mainColor,
-                                size: 40,
+                              child: Container(
+                                padding: const EdgeInsets.all(10),
+                                decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(10),
+                                  color: mainColor,
+                                ),
+                                child: const Column(
+                                  children: [
+                                    Icon(
+                                      Icons.delete_forever_rounded,
+                                      color: Colors.white,
+                                      size: 30,
+                                    ),
+                                    Text(
+                                      "삭제하기",
+                                      style: TextStyle(
+                                          color: Colors.white,
+                                          fontWeight: FontWeight.bold,
+                                          fontSize: 12),
+                                    ),
+                                  ],
+                                ),
                               ),
                             ),
                           ],
@@ -1035,6 +1083,28 @@ String tourTypeText(contentTypeId) {
       break;
   }
   return typeValue;
+}
+
+String spotDurationCalc(int index) {
+  String returnDuration = "시간 간격\n";
+  if (finalTourList[index]
+          .enterTime
+          .difference(finalTourList[index - 1].exitTime)
+          .inHours >
+      0) {
+    returnDuration +=
+        "${finalTourList[index].enterTime.difference(finalTourList[index - 1].exitTime).inHours}시간 ";
+  }
+  if (finalTourList[index]
+              .enterTime
+              .difference(finalTourList[index - 1].exitTime)
+              .inMinutes %
+          60 >
+      0) {
+    returnDuration +=
+        "${finalTourList[index].enterTime.difference(finalTourList[index - 1].exitTime).inMinutes % 60}분";
+  }
+  return returnDuration;
 }
 
 //관광타입에 맞는 컬러 반환
