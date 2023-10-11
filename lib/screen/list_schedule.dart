@@ -617,13 +617,32 @@ class _TourSpotListState extends State<TourSpotList> {
                 child: Padding(
                   padding: const EdgeInsets.all(10.0), // 내용 주위의 여백 (선택 사항)
                   child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    mainAxisSize: MainAxisSize.max,
                     children: [
                       Flexible(
-                        flex: 7,
+                        flex: 6,
+                        fit: FlexFit.tight,
                         child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
+                          crossAxisAlignment: CrossAxisAlignment.center,
                           children: [
+                            Text(
+                              finalTourList[index].title,
+                              style: const TextStyle(
+                                overflow: TextOverflow.fade,
+                                fontSize: 15.0,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                            const SizedBox(height: 5),
+                            Text(
+                              finalTourList[index].address,
+                              style: const TextStyle(
+                                fontSize: 14.0,
+                              ),
+                            ),
+                            const SizedBox(height: 5),
+
                             //입장시간
                             Padding(
                               padding: const EdgeInsets.all(8.0),
@@ -651,10 +670,11 @@ class _TourSpotListState extends State<TourSpotList> {
                                             ),
                                           ),
                                           Text(
-                                            "${finalTourList[index].enterTime.month}/${finalTourList[index].enterTime.day} ${finalTourList[index].enterTime.hour}:${finalTourList[index].enterTime.minute}",
+                                            DateFormat("MM월 dd일\nHH:mm").format(
+                                                finalTourList[index].enterTime),
                                             textAlign: TextAlign.center,
                                             style:
-                                                const TextStyle(fontSize: 18),
+                                                const TextStyle(fontSize: 15),
                                           ),
                                         ],
                                       ),
@@ -682,10 +702,11 @@ class _TourSpotListState extends State<TourSpotList> {
                                             ),
                                           ),
                                           Text(
-                                            "${finalTourList[index].exitTime.month}/${finalTourList[index].exitTime.day} ${finalTourList[index].exitTime.hour}:${finalTourList[index].exitTime.minute}",
+                                            DateFormat("MM월 dd일\nHH:mm").format(
+                                                finalTourList[index].exitTime),
                                             textAlign: TextAlign.center,
                                             style:
-                                                const TextStyle(fontSize: 18),
+                                                const TextStyle(fontSize: 15),
                                           ),
                                         ],
                                       ),
@@ -694,22 +715,14 @@ class _TourSpotListState extends State<TourSpotList> {
                                 ),
                               ),
                             ),
-                            Text(
-                              finalTourList[index].title,
-                              style: const TextStyle(
-                                overflow: TextOverflow.fade,
-                                fontSize: 15.0,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                            const SizedBox(height: 5),
-                            Text(
-                              finalTourList[index].address,
-                              style: const TextStyle(
-                                fontSize: 14.0,
-                              ),
-                            ),
-                            const SizedBox(height: 5),
+                          ],
+                        ),
+                      ),
+                      Flexible(
+                        flex: 3,
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
                             Container(
                               padding: const EdgeInsets.all(5),
                               decoration: BoxDecoration(
@@ -726,45 +739,43 @@ class _TourSpotListState extends State<TourSpotList> {
                                 ),
                               ),
                             ),
-                          ],
-                        ),
-                      ),
-                      const SizedBox(width: 10),
-                      SizedBox(
-                        width: 65,
-                        child: Column(
-                          children: [
-                            Image.network(
-                              finalTourList[index].imageUrl,
-                              fit: BoxFit.cover,
-                              errorBuilder: (BuildContext context,
-                                  Object exception, StackTrace? stackTrace) {
-                                // 에러 처리 로직을 여기에 구현
-                                return const Column(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: [
-                                    Icon(
-                                      Icons.image_not_supported_outlined,
-                                      color: mainColor,
-                                    ),
-                                    Text(
-                                      'No Image',
-                                      style: TextStyle(color: mainColor),
-                                    ),
-                                  ],
-                                );
-                              },
-                            ),
+                            const SizedBox(height: 5),
                             SizedBox(
-                              height: 10,
+                              width: 100,
+                              height: 60,
+                              child: Image.network(
+                                finalTourList[index].imageUrl,
+                                fit: BoxFit.fill,
+                                errorBuilder: (BuildContext context,
+                                    Object exception, StackTrace? stackTrace) {
+                                  // 에러 처리 로직을 여기에 구현
+                                  return const Column(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      Icon(
+                                        Icons.image_not_supported_outlined,
+                                        color: mainColor,
+                                      ),
+                                      Text(
+                                        'No Image',
+                                        style: TextStyle(color: mainColor),
+                                      ),
+                                    ],
+                                  );
+                                },
+                              ),
                             ),
                             InkWell(
                               onTap: () {
                                 debugPrint("$index 번째를 눌렀다.");
+                                setState(() {
+                                  finalTourList.removeAt(index);
+                                });
                               },
-                              child: Icon(
+                              child: const Icon(
                                 Icons.delete_forever_rounded,
                                 color: mainColor,
+                                size: 40,
                               ),
                             ),
                           ],
@@ -848,32 +859,25 @@ class _DetailInfoDialogState extends State<DetailInfoDialog> {
                 ),
               ),
               const SizedBox(height: 10),
-              Container(
-                clipBehavior: Clip.hardEdge,
-                decoration: BoxDecoration(
-                  border: Border.all(color: mainColor, width: 1.5),
-                  borderRadius: BorderRadius.circular(5),
-                ),
-                child: Image.network(
-                  widget.imageUrl,
-                  errorBuilder: (BuildContext context, Object exception,
-                      StackTrace? stackTrace) {
-                    // 에러 처리 로직을 여기에 구현
-                    return const Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Icon(
-                          Icons.image_not_supported_outlined,
-                          color: mainColor,
-                        ),
-                        Text(
-                          'No Image',
-                          style: TextStyle(color: mainColor),
-                        ),
-                      ],
-                    );
-                  },
-                ),
+              Image.network(
+                widget.imageUrl,
+                errorBuilder: (BuildContext context, Object exception,
+                    StackTrace? stackTrace) {
+                  // 에러 처리 로직을 여기에 구현
+                  return const Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Icon(
+                        Icons.image_not_supported_outlined,
+                        color: mainColor,
+                      ),
+                      Text(
+                        'No Image',
+                        style: TextStyle(color: mainColor),
+                      ),
+                    ],
+                  );
+                },
               ),
               const SizedBox(height: 15),
               const SizedBox(
