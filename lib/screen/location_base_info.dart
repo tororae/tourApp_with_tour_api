@@ -71,6 +71,10 @@ class FinalTourData {
 Future<void> getLocationBasedData(apiUrl) async {
   final response = await http.get(Uri.parse(apiUrl));
   locationList.clear(); //리스트를 초기화하고 다시 로딩하기 위함.
+  foodList.clear;
+  tourList.clear;
+  sleepList.clear;
+
   debugPrint("----------지역기반 관광지 호출결과");
   debugPrint("----------지역기반 관광지 호출결과\n$response");
   if (response.statusCode == 200) {

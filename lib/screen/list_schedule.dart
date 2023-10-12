@@ -617,14 +617,241 @@ class _TourSpotListState extends State<TourSpotList> {
                       style: const TextStyle(
                           color: mainColor, fontWeight: FontWeight.bold),
                     ),
-                    const Card(
-                      elevation: 5,
-                      child: Padding(
-                        padding:
-                            EdgeInsets.symmetric(horizontal: 30, vertical: 5),
-                        child: Icon(
-                          Icons.add_location_alt_outlined,
-                          color: mainColor,
+                    InkWell(
+                      onTap: () {
+                        setState(() {
+                          // finalTourList.insert(
+                          //   index,
+                          //   FinalTourData(
+                          //     title: foodList[0].title,
+                          //     address: foodList[0].address,
+                          //     imageUrl: foodList[0].imageUrl,
+                          //     dist: foodList[0].dist,
+                          //     mapX: foodList[0].mapX,
+                          //     mapY: foodList[0].mapY,
+                          //     contentId: foodList[0].contentId,
+                          //     contentTypeId: foodList[0].contentTypeId,
+                          //     enterTime: DateTime.now(),
+                          //     exitTime: DateTime.now(),
+                          //     itemKey: UniqueKey(),
+                          //   ),
+                          // );
+                        });
+                        showDialog(
+                          context: context,
+                          builder: (context) {
+                            int category = 0;
+                            int categoryLength = locationList.length;
+                            var target = locationList;
+                            return StatefulBuilder(
+                              builder: (context, setState) => Dialog(
+                                elevation: 10,
+                                child: Padding(
+                                  padding: const EdgeInsets.all(15.0),
+                                  child: Column(
+                                    mainAxisSize: MainAxisSize.min,
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceEvenly,
+                                    children: [
+                                      Flexible(
+                                        child: SizedBox(
+                                          child: Row(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.spaceAround,
+                                            children: [
+                                              InkWell(
+                                                onTap: () {
+                                                  debugPrint("$index를 누름.");
+                                                  if (category != 0) {
+                                                    setState(() {
+                                                      category = 0;
+                                                      categoryLength =
+                                                          locationList.length;
+                                                      target = locationList;
+                                                    });
+                                                  }
+                                                  debugPrint("$category 누름.");
+                                                },
+                                                child: Container(
+                                                  padding:
+                                                      const EdgeInsets.all(10),
+                                                  decoration: BoxDecoration(
+                                                    color: category == 0
+                                                        ? mainColor
+                                                        : null,
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                            10),
+                                                    border: Border.all(
+                                                        color: mainColor),
+                                                  ),
+                                                  child: Text(
+                                                    "전체",
+                                                    style: TextStyle(
+                                                      color: category == 0
+                                                          ? Colors.white
+                                                          : mainColor,
+                                                    ),
+                                                  ),
+                                                ),
+                                              ),
+                                              InkWell(
+                                                onTap: () {
+                                                  debugPrint("$index를 누름.");
+                                                  if (category != 1) {
+                                                    setState(() {
+                                                      category = 1;
+                                                      categoryLength =
+                                                          tourList.length;
+                                                      target = tourList;
+                                                    });
+                                                  }
+                                                  debugPrint("$category 누름.");
+                                                },
+                                                child: Container(
+                                                  padding:
+                                                      const EdgeInsets.all(10),
+                                                  decoration: BoxDecoration(
+                                                    color: category == 1
+                                                        ? mainColor
+                                                        : null,
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                            10),
+                                                    border: Border.all(
+                                                        color: mainColor),
+                                                  ),
+                                                  child: Text(
+                                                    "관광",
+                                                    style: TextStyle(
+                                                      color: category == 1
+                                                          ? Colors.white
+                                                          : mainColor,
+                                                    ),
+                                                  ),
+                                                ),
+                                              ),
+                                              InkWell(
+                                                onTap: () {
+                                                  debugPrint("$index를 누름.");
+                                                  if (category != 2) {
+                                                    setState(() {
+                                                      category = 2;
+                                                      categoryLength =
+                                                          foodList.length;
+                                                      target = foodList;
+                                                    });
+                                                  }
+                                                  debugPrint("$category 누름.");
+                                                },
+                                                child: Container(
+                                                  padding:
+                                                      const EdgeInsets.all(10),
+                                                  decoration: BoxDecoration(
+                                                    color: category == 2
+                                                        ? mainColor
+                                                        : null,
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                            10),
+                                                    border: Border.all(
+                                                        color: mainColor),
+                                                  ),
+                                                  child: Text(
+                                                    "식사",
+                                                    style: TextStyle(
+                                                      color: category == 2
+                                                          ? Colors.white
+                                                          : mainColor,
+                                                    ),
+                                                  ),
+                                                ),
+                                              ),
+                                              InkWell(
+                                                onTap: () {
+                                                  if (category != 3) {
+                                                    setState(() {
+                                                      category = 3;
+                                                      categoryLength =
+                                                          sleepList.length;
+                                                      target = sleepList;
+                                                    });
+                                                  }
+                                                  debugPrint("$category 누름.");
+                                                },
+                                                child: Container(
+                                                  padding:
+                                                      const EdgeInsets.all(10),
+                                                  decoration: BoxDecoration(
+                                                    color: category == 3
+                                                        ? mainColor
+                                                        : null,
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                            10),
+                                                    border: Border.all(
+                                                        color: mainColor),
+                                                  ),
+                                                  child: Text(
+                                                    "숙박",
+                                                    style: TextStyle(
+                                                      color: category == 3
+                                                          ? Colors.white
+                                                          : mainColor,
+                                                    ),
+                                                  ),
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                      ),
+                                      const SizedBox(height: 10),
+                                      Expanded(
+                                        child: ListView.builder(
+                                          itemCount: categoryLength,
+                                          itemBuilder: (context, index) {
+                                            return Text(target[index].title);
+                                          },
+                                        ),
+                                      ),
+                                      const SizedBox(height: 10),
+                                      InkWell(
+                                        onTap: () {
+                                          Navigator.pop(context);
+                                        },
+                                        child: Container(
+                                          padding: const EdgeInsets.symmetric(
+                                              horizontal: 20, vertical: 10),
+                                          decoration: BoxDecoration(
+                                            color: mainColor,
+                                            borderRadius:
+                                                BorderRadius.circular(10),
+                                          ),
+                                          child: const Text(
+                                            "취소",
+                                            style:
+                                                TextStyle(color: Colors.white),
+                                          ),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ),
+                            );
+                          },
+                        );
+                      },
+                      child: const Card(
+                        elevation: 5,
+                        child: Padding(
+                          padding:
+                              EdgeInsets.symmetric(horizontal: 30, vertical: 5),
+                          child: Icon(
+                            Icons.add_location_alt_outlined,
+                            color: mainColor,
+                          ),
                         ),
                       ),
                     ),
