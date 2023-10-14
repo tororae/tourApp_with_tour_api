@@ -92,29 +92,32 @@ class _MainScreenState extends State<MainScreen> {
 
         return false;
       },
-      child: Scaffold(
-        body: navigationItems.elementAt(_selectedIndex),
+      child: const Scaffold(
+        body: ScheduleScreen(),
 
-        //NavigationBar로 교체함. 근데 글자 색 바꾸는 옵션이 없는 듯 함.
-        bottomNavigationBar: NavigationBar(
-          indicatorColor: Colors.white,
-          destinations: [
-            myNavigationItem(
-                imagePath: "lib/assets/img1_home.png", labelText: "홈"),
-            myNavigationItem(
-                imagePath: "lib/assets/img2_schedule.png", labelText: "스케쥴"),
-            myNavigationItem(
-                imagePath: "lib/assets/img3_themecourse.png",
-                labelText: "테마코스"),
-            myNavigationItem(
-                imagePath: "lib/assets/img4_around.png", labelText: "주변보기"),
-            myNavigationItem(
-                imagePath: "lib/assets/img5_setting.png", labelText: "내 설정"),
-          ],
-          onDestinationSelected: _onItemTapped,
-          selectedIndex: _selectedIndex,
-          backgroundColor: mainColor,
-        ),
+        ///임시로 메뉴화면 제거. 바로 스케쥴화면으로.
+        // body: navigationItems.elementAt(_selectedIndex),
+
+        // //NavigationBar로 교체함. 근데 글자 색 바꾸는 옵션이 없는 듯 함.
+        // bottomNavigationBar: NavigationBar(
+        //   indicatorColor: Colors.white,
+        //   destinations: [
+        //     myNavigationItem(
+        //         imagePath: "lib/assets/img1_home.png", labelText: "홈"),
+        //     myNavigationItem(
+        //         imagePath: "lib/assets/img2_schedule.png", labelText: "스케쥴"),
+        //     myNavigationItem(
+        //         imagePath: "lib/assets/img3_themecourse.png",
+        //         labelText: "테마코스"),
+        //     myNavigationItem(
+        //         imagePath: "lib/assets/img4_around.png", labelText: "주변보기"),
+        //     myNavigationItem(
+        //         imagePath: "lib/assets/img5_setting.png", labelText: "내 설정"),
+        //   ],
+        //   onDestinationSelected: _onItemTapped,
+        //   selectedIndex: _selectedIndex,
+        //   backgroundColor: mainColor,
+        // ),
       ),
     );
   }

@@ -3,6 +3,7 @@
 
 import 'dart:math';
 
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_widget_from_html/flutter_widget_from_html.dart'; //안쓸지도 모름.
@@ -498,7 +499,7 @@ class _ScheduleListState extends State<ScheduleList> {
                               borderRadius: BorderRadius.circular(5),
                             ),
                             child: const Text(
-                              '여행일정 요청',
+                              'AI의 여행설명',
                               style: TextStyle(
                                 color: Colors.white,
                               ),
@@ -1134,40 +1135,174 @@ class _TourSpotListState extends State<TourSpotList> {
                                     const SizedBox(
                                       width: 10,
                                     ),
-                                    Container(
-                                      padding: const EdgeInsets.symmetric(
-                                        horizontal: 6,
-                                        vertical: 5,
-                                      ),
-                                      decoration: BoxDecoration(
-                                        border: Border.all(color: mainColor),
-                                        borderRadius: BorderRadius.circular(15),
-                                      ),
-                                      child: Column(
-                                        children: [
-                                          const Text(
-                                            "OUT",
-                                            style: TextStyle(
-                                              color: mainColor,
-                                              fontSize: 20,
-                                              fontWeight: FontWeight.bold,
+                                    //나가는 시간 설정하는 부분.
+                                    InkWell(
+                                      onTap: () {
+                                        showDialog(
+                                          context: context,
+                                          builder: (context) {
+                                            return Dialog(
+                                              child: Column(
+                                                mainAxisSize: MainAxisSize.min,
+                                                children: [
+                                                  Flexible(
+                                                    flex: 3,
+                                                    child: CupertinoDatePicker(
+                                                      ////////////
+                                                      onDateTimeChanged:
+                                                          (value) {},
+                                                      initialDateTime:
+                                                          finalTourList[index]
+                                                              .exitTime,
+                                                      minimumDate:
+                                                          finalTourList[index]
+                                                              .enterTime,
+                                                      maximumDate: index <
+                                                              finalTourList
+                                                                      .length -
+                                                                  1
+                                                          ? finalTourList[
+                                                                  index + 1]
+                                                              .exitTime
+                                                          : finalTourList[index]
+                                                              .exitTime,
+                                                      use24hFormat: true,
+                                                    ),
+                                                  ),
+                                                  Flexible(
+                                                    flex: 3,
+                                                    child: Container(
+                                                      margin: const EdgeInsets
+                                                          .symmetric(
+                                                          vertical: 5),
+                                                      padding:
+                                                          const EdgeInsets.all(
+                                                              10),
+                                                      decoration: BoxDecoration(
+                                                        color: mainColor,
+                                                        border: Border.all(
+                                                            color: mainColor),
+                                                        borderRadius:
+                                                            BorderRadius
+                                                                .circular(10),
+                                                      ),
+                                                      child: const Row(
+                                                        mainAxisSize:
+                                                            MainAxisSize.min,
+                                                        children: [
+                                                          Icon(
+                                                            Icons.check,
+                                                            color: Colors.white,
+                                                          ),
+                                                          Text(
+                                                            "시간 변경",
+                                                            style: TextStyle(
+                                                                color: Colors
+                                                                    .white),
+                                                          ),
+                                                        ],
+                                                      ),
+                                                    ),
+                                                  ),
+                                                  Flexible(
+                                                    flex: 3,
+                                                    child: Container(
+                                                      margin: const EdgeInsets
+                                                          .symmetric(
+                                                          vertical: 5),
+                                                      padding:
+                                                          const EdgeInsets.all(
+                                                              10),
+                                                      decoration: BoxDecoration(
+                                                        border: Border.all(
+                                                            color: mainColor),
+                                                        borderRadius:
+                                                            BorderRadius
+                                                                .circular(10),
+                                                      ),
+                                                      child: const Row(
+                                                        mainAxisSize:
+                                                            MainAxisSize.min,
+                                                        children: [
+                                                          Icon(
+                                                            Icons.close,
+                                                            color: mainColor,
+                                                          ),
+                                                          Text(
+                                                            "변경 취소",
+                                                            style: TextStyle(
+                                                                color:
+                                                                    mainColor),
+                                                          ),
+                                                        ],
+                                                      ),
+                                                    ),
+                                                  ),
+                                                  const SizedBox(
+                                                    height: 15,
+                                                  ),
+                                                ],
+                                              ),
+                                            );
+                                          },
+                                        );
+                                      },
+                                      child: Container(
+                                        padding: const EdgeInsets.symmetric(
+                                          horizontal: 6,
+                                          vertical: 5,
+                                        ),
+                                        decoration: BoxDecoration(
+                                          border: Border.all(color: mainColor),
+                                          borderRadius:
+                                              BorderRadius.circular(15),
+                                        ),
+                                        child: Column(
+                                          children: [
+                                            const Text(
+                                              "OUT",
+                                              style: TextStyle(
+                                                color: mainColor,
+                                                fontSize: 20,
+                                                fontWeight: FontWeight.bold,
+                                              ),
                                             ),
-                                          ),
-                                          Text(
-                                            DateFormat("MM월 dd일\nHH:mm").format(
-                                                finalTourList[index].exitTime),
-                                            textAlign: TextAlign.center,
-                                            style:
-                                                const TextStyle(fontSize: 15),
-                                          ),
-                                        ],
+                                            Text(
+                                              DateFormat("MM월 dd일\nHH:mm")
+                                                  .format(finalTourList[index]
+                                                      .exitTime),
+                                              textAlign: TextAlign.center,
+                                              style:
+                                                  const TextStyle(fontSize: 15),
+                                            ),
+                                          ],
+                                        ),
                                       ),
                                     ),
                                   ],
                                 ),
                               ),
                             ),
-                            Text("경유시간\n${spotSelfDurationCalc(index)}"),
+                            Container(
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 20,
+                                  vertical: 10,
+                                ),
+                                decoration: BoxDecoration(
+                                  border: Border.all(color: mainColor),
+                                  borderRadius: BorderRadius.circular(15),
+                                ),
+                                child: Column(children: [
+                                  Text("경유시간",
+                                      style: TextStyle(
+                                        color: mainColor,
+                                        fontSize: 20,
+                                        fontWeight: FontWeight.bold,
+                                      )),
+                                  Text(
+                                    spotSelfDurationCalc(index),
+                                  ),
+                                ])),
                           ],
                         ),
                       ),
@@ -1545,21 +1680,21 @@ String spotSelfDurationCalc(int index) {
     return returnDuration += "없음";
   }
   if (finalTourList[index]
-          .enterTime
-          .difference(finalTourList[index].exitTime)
+          .exitTime
+          .difference(finalTourList[index].enterTime)
           .inHours >
       0) {
     returnDuration +=
-        "${finalTourList[index].enterTime.difference(finalTourList[index].exitTime).inHours}시간 ";
+        "${finalTourList[index].exitTime.difference(finalTourList[index].enterTime).inHours}시간 ";
   }
   if (finalTourList[index]
-              .enterTime
-              .difference(finalTourList[index].exitTime)
+              .exitTime
+              .difference(finalTourList[index].enterTime)
               .inMinutes %
           60 >
       0) {
     returnDuration +=
-        "${finalTourList[index].enterTime.difference(finalTourList[index].exitTime).inMinutes % 60}분";
+        "${finalTourList[index].exitTime.difference(finalTourList[index].enterTime).inMinutes % 60}분";
   }
   return returnDuration;
 }
