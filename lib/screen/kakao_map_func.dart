@@ -54,7 +54,8 @@ class _KakaoMapTourListState extends State<KakaoMapTourList> {
             polylineId: 'tourPolyline',
             points: tourLine,
             strokeColor: mainColor,
-            strokeOpacity: 0.5,
+            strokeOpacity: 0.7,
+            strokeWidth: 3,
           ),
         );
         debugPrint("${polylines.length} 이 배열의 길이다. ${tourLine.length}");

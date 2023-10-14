@@ -609,467 +609,525 @@ class _TourSpotListState extends State<TourSpotList> {
           child: Column(
             children: [
               if (index != 0)
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                Column(
                   children: [
-                    Text(
-                      spotDurationCalc(index),
-                      textAlign: TextAlign.center,
-                      style: const TextStyle(
-                          color: mainColor, fontWeight: FontWeight.bold),
-                    ),
-                    //일정 추가를 위한 부분
-                    InkWell(
-                      onTap: () async {
-                        int clickedIndex = index;
-                        await showDialog(
-                          context: context,
-                          builder: (context) {
-                            int category = 0;
-                            int categoryLength = locationList.length;
-                            var target = locationList;
-                            return StatefulBuilder(
-                              builder: (context, setState) => Dialog(
-                                elevation: 10,
-                                child: Padding(
-                                  padding: const EdgeInsets.all(8.0),
-                                  child: Column(
-                                    mainAxisSize: MainAxisSize.min,
-                                    mainAxisAlignment:
-                                        MainAxisAlignment.spaceEvenly,
-                                    children: [
-                                      //추가할 아이템의 카테고리 선택기능
-                                      Flexible(
-                                        child: SizedBox(
-                                          child: Row(
-                                            mainAxisAlignment:
-                                                MainAxisAlignment.spaceAround,
-                                            children: [
-                                              InkWell(
-                                                onTap: () {
-                                                  debugPrint("$index를 누름.");
-                                                  if (category != 0) {
-                                                    setState(() {
-                                                      category = 0;
-                                                      categoryLength =
-                                                          locationList.length;
-                                                      target = locationList;
-                                                    });
-                                                  }
-                                                  debugPrint("$category 누름.");
-                                                },
-                                                child: Container(
-                                                  padding:
-                                                      const EdgeInsets.all(10),
-                                                  decoration: BoxDecoration(
-                                                    color: category == 0
-                                                        ? mainColor
-                                                        : null,
-                                                    borderRadius:
-                                                        BorderRadius.circular(
-                                                            10),
-                                                    border: Border.all(
-                                                        color: mainColor),
-                                                  ),
-                                                  child: Text(
-                                                    "전체",
-                                                    style: TextStyle(
-                                                      color: category == 0
-                                                          ? Colors.white
-                                                          : mainColor,
-                                                    ),
-                                                  ),
-                                                ),
-                                              ),
-                                              InkWell(
-                                                onTap: () {
-                                                  debugPrint("$index를 누름.");
-                                                  if (category != 1) {
-                                                    setState(() {
-                                                      category = 1;
-                                                      categoryLength =
-                                                          tourList.length;
-                                                      target = tourList;
-                                                    });
-                                                  }
-                                                  debugPrint("$category 누름.");
-                                                },
-                                                child: Container(
-                                                  padding:
-                                                      const EdgeInsets.all(10),
-                                                  decoration: BoxDecoration(
-                                                    color: category == 1
-                                                        ? mainColor
-                                                        : null,
-                                                    borderRadius:
-                                                        BorderRadius.circular(
-                                                            10),
-                                                    border: Border.all(
-                                                        color: mainColor),
-                                                  ),
-                                                  child: Text(
-                                                    "관광",
-                                                    style: TextStyle(
-                                                      color: category == 1
-                                                          ? Colors.white
-                                                          : mainColor,
-                                                    ),
-                                                  ),
-                                                ),
-                                              ),
-                                              InkWell(
-                                                onTap: () {
-                                                  debugPrint("$index를 누름.");
-                                                  if (category != 2) {
-                                                    setState(() {
-                                                      category = 2;
-                                                      categoryLength =
-                                                          foodList.length;
-                                                      target = foodList;
-                                                    });
-                                                  }
-                                                  debugPrint("$category 누름.");
-                                                },
-                                                child: Container(
-                                                  padding:
-                                                      const EdgeInsets.all(10),
-                                                  decoration: BoxDecoration(
-                                                    color: category == 2
-                                                        ? mainColor
-                                                        : null,
-                                                    borderRadius:
-                                                        BorderRadius.circular(
-                                                            10),
-                                                    border: Border.all(
-                                                        color: mainColor),
-                                                  ),
-                                                  child: Text(
-                                                    "식사",
-                                                    style: TextStyle(
-                                                      color: category == 2
-                                                          ? Colors.white
-                                                          : mainColor,
-                                                    ),
-                                                  ),
-                                                ),
-                                              ),
-                                              InkWell(
-                                                onTap: () {
-                                                  if (category != 3) {
-                                                    setState(() {
-                                                      category = 3;
-                                                      categoryLength =
-                                                          sleepList.length;
-                                                      target = sleepList;
-                                                    });
-                                                  }
-                                                  debugPrint("$category 누름.");
-                                                },
-                                                child: Container(
-                                                  padding:
-                                                      const EdgeInsets.all(10),
-                                                  decoration: BoxDecoration(
-                                                    color: category == 3
-                                                        ? mainColor
-                                                        : null,
-                                                    borderRadius:
-                                                        BorderRadius.circular(
-                                                            10),
-                                                    border: Border.all(
-                                                        color: mainColor),
-                                                  ),
-                                                  child: Text(
-                                                    "숙박",
-                                                    style: TextStyle(
-                                                      color: category == 3
-                                                          ? Colors.white
-                                                          : mainColor,
-                                                    ),
-                                                  ),
-                                                ),
-                                              ),
-                                            ],
-                                          ),
-                                        ),
-                                      ),
-                                      const SizedBox(height: 10),
-                                      //아이템 목록 화면
-                                      Expanded(
-                                        child: ListView.builder(
-                                          itemCount: categoryLength,
-                                          itemBuilder: (context, index) {
-                                            return Card(
-                                              child: Padding(
-                                                padding:
-                                                    const EdgeInsets.all(5.0),
+                    Padding(
+                      padding: const EdgeInsets.all(12.0),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                        children: [
+                          Text(
+                            spotDurationCalc(index),
+                            textAlign: TextAlign.center,
+                            style: const TextStyle(
+                                color: mainColor, fontWeight: FontWeight.bold),
+                          ),
+                          //일정 추가를 위한 부분
+                          InkWell(
+                            onTap: () async {
+                              int clickedIndex = index;
+                              await showDialog(
+                                context: context,
+                                builder: (context) {
+                                  int category = 0;
+                                  int categoryLength = locationList.length;
+                                  var target = locationList;
+                                  return StatefulBuilder(
+                                    builder: (context, setState) => Dialog(
+                                      elevation: 10,
+                                      child: Padding(
+                                        padding: const EdgeInsets.all(8.0),
+                                        child: Column(
+                                          mainAxisSize: MainAxisSize.min,
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.spaceEvenly,
+                                          children: [
+                                            //추가할 아이템의 카테고리 선택기능
+                                            Flexible(
+                                              child: SizedBox(
                                                 child: Row(
                                                   mainAxisAlignment:
                                                       MainAxisAlignment
-                                                          .spaceBetween,
-                                                  mainAxisSize:
-                                                      MainAxisSize.max,
+                                                          .spaceAround,
                                                   children: [
-                                                    Flexible(
-                                                      flex: 7,
-                                                      child: Column(
-                                                        crossAxisAlignment:
-                                                            CrossAxisAlignment
-                                                                .start,
-                                                        children: [
-                                                          Container(
-                                                            padding:
-                                                                const EdgeInsets
-                                                                    .all(5),
-                                                            decoration: BoxDecoration(
-                                                                color: tourTypeColor(
-                                                                    target[index]
-                                                                        .contentTypeId),
-                                                                borderRadius:
-                                                                    const BorderRadius
-                                                                        .all(
-                                                                        Radius.circular(
-                                                                            5))),
-                                                            child: Text(
-                                                              tourTypeText(target[
-                                                                      index]
-                                                                  .contentTypeId),
-                                                              style:
-                                                                  const TextStyle(
-                                                                color: Colors
-                                                                    .white,
-                                                                fontSize: 16.0,
-                                                              ),
-                                                            ),
+                                                    InkWell(
+                                                      onTap: () {
+                                                        debugPrint(
+                                                            "$index를 누름.");
+                                                        if (category != 0) {
+                                                          setState(() {
+                                                            category = 0;
+                                                            categoryLength =
+                                                                locationList
+                                                                    .length;
+                                                            target =
+                                                                locationList;
+                                                          });
+                                                        }
+                                                        debugPrint(
+                                                            "$category 누름.");
+                                                      },
+                                                      child: Container(
+                                                        padding:
+                                                            const EdgeInsets
+                                                                .all(10),
+                                                        decoration:
+                                                            BoxDecoration(
+                                                          color: category == 0
+                                                              ? mainColor
+                                                              : null,
+                                                          borderRadius:
+                                                              BorderRadius
+                                                                  .circular(10),
+                                                          border: Border.all(
+                                                              color: mainColor),
+                                                        ),
+                                                        child: Text(
+                                                          "전체",
+                                                          style: TextStyle(
+                                                            color: category == 0
+                                                                ? Colors.white
+                                                                : mainColor,
                                                           ),
-                                                          const SizedBox(
-                                                            height: 3,
-                                                          ),
-                                                          Text(
-                                                            target[index].title,
-                                                            style: const TextStyle(
-                                                                fontWeight:
-                                                                    FontWeight
-                                                                        .bold),
-                                                          ),
-                                                          const SizedBox(
-                                                            height: 3,
-                                                          ),
-                                                          Text(
-                                                            target[index]
-                                                                .address,
-                                                          ),
-                                                        ],
+                                                        ),
                                                       ),
                                                     ),
-                                                    Flexible(
-                                                      flex: 3,
-                                                      child: Column(
-                                                        children: [
-                                                          InkWell(
-                                                            onTap: () {
-                                                              showDialog(
-                                                                context:
-                                                                    context,
-                                                                builder:
-                                                                    (context) {
-                                                                  return DetailInfoDialog(
-                                                                      title: target[
-                                                                              index]
-                                                                          .title,
-                                                                      address: target[
-                                                                              index]
-                                                                          .address,
-                                                                      mapX: target[
-                                                                              index]
-                                                                          .mapX,
-                                                                      mapY: target[
-                                                                              index]
-                                                                          .mapY,
-                                                                      //시간 크게 의미없어서 그냥 지금으로 넘김.
-                                                                      //추후 리팩토링때 애초에 이 함수에서 그냥 시간을 안받게 해도됨. 상세정보에선 시간안봄.
-                                                                      enterTime:
-                                                                          DateTime
-                                                                              .now(),
-                                                                      exitTime:
-                                                                          DateTime
-                                                                              .now(),
-                                                                      imageUrl:
-                                                                          target[index]
-                                                                              .imageUrl);
-                                                                },
-                                                              );
-                                                            },
-                                                            // 클릭시 일정 추가하는 부분.
-                                                            child: Container(
-                                                              padding:
-                                                                  const EdgeInsets
-                                                                      .all(8),
-                                                              decoration:
-                                                                  BoxDecoration(
-                                                                borderRadius:
-                                                                    const BorderRadius
-                                                                        .all(
-                                                                  Radius
-                                                                      .circular(
-                                                                          10),
-                                                                ),
-                                                                border: Border.all(
-                                                                    color:
-                                                                        mainColor,
-                                                                    width: 2),
-                                                              ),
-                                                              child: const Icon(
-                                                                Icons
-                                                                    .location_on,
-                                                                size: 20,
-                                                                color:
-                                                                    mainColor,
-                                                              ),
-                                                            ),
+                                                    InkWell(
+                                                      onTap: () {
+                                                        debugPrint(
+                                                            "$index를 누름.");
+                                                        if (category != 1) {
+                                                          setState(() {
+                                                            category = 1;
+                                                            categoryLength =
+                                                                tourList.length;
+                                                            target = tourList;
+                                                          });
+                                                        }
+                                                        debugPrint(
+                                                            "$category 누름.");
+                                                      },
+                                                      child: Container(
+                                                        padding:
+                                                            const EdgeInsets
+                                                                .all(10),
+                                                        decoration:
+                                                            BoxDecoration(
+                                                          color: category == 1
+                                                              ? mainColor
+                                                              : null,
+                                                          borderRadius:
+                                                              BorderRadius
+                                                                  .circular(10),
+                                                          border: Border.all(
+                                                              color: mainColor),
+                                                        ),
+                                                        child: Text(
+                                                          "관광",
+                                                          style: TextStyle(
+                                                            color: category == 1
+                                                                ? Colors.white
+                                                                : mainColor,
                                                           ),
-                                                          const SizedBox(
-                                                            height: 3,
+                                                        ),
+                                                      ),
+                                                    ),
+                                                    InkWell(
+                                                      onTap: () {
+                                                        debugPrint(
+                                                            "$index를 누름.");
+                                                        if (category != 2) {
+                                                          setState(() {
+                                                            category = 2;
+                                                            categoryLength =
+                                                                foodList.length;
+                                                            target = foodList;
+                                                          });
+                                                        }
+                                                        debugPrint(
+                                                            "$category 누름.");
+                                                      },
+                                                      child: Container(
+                                                        padding:
+                                                            const EdgeInsets
+                                                                .all(10),
+                                                        decoration:
+                                                            BoxDecoration(
+                                                          color: category == 2
+                                                              ? mainColor
+                                                              : null,
+                                                          borderRadius:
+                                                              BorderRadius
+                                                                  .circular(10),
+                                                          border: Border.all(
+                                                              color: mainColor),
+                                                        ),
+                                                        child: Text(
+                                                          "식사",
+                                                          style: TextStyle(
+                                                            color: category == 2
+                                                                ? Colors.white
+                                                                : mainColor,
                                                           ),
-                                                          InkWell(
-                                                            onTap: () {
-                                                              //////////////////
-                                                              debugPrint(
-                                                                  "$index 누른거야..$clickedIndex");
-
-                                                              finalTourList
-                                                                  .insert(
-                                                                clickedIndex,
-                                                                FinalTourData(
-                                                                  title: target[
-                                                                          index]
-                                                                      .title,
-                                                                  address: target[
-                                                                          index]
-                                                                      .address,
-                                                                  imageUrl: target[
-                                                                          index]
-                                                                      .imageUrl,
-                                                                  dist: target[
-                                                                          index]
-                                                                      .dist,
-                                                                  mapX: target[
-                                                                          index]
-                                                                      .mapX,
-                                                                  mapY: target[
-                                                                          index]
-                                                                      .mapY,
-                                                                  contentId: target[
-                                                                          index]
-                                                                      .contentId,
-                                                                  contentTypeId:
-                                                                      target[index]
-                                                                          .contentTypeId,
-                                                                  enterTime: finalTourList[
-                                                                          clickedIndex -
-                                                                              1]
-                                                                      .exitTime,
-                                                                  exitTime: finalTourList[
-                                                                          clickedIndex]
-                                                                      .enterTime,
-                                                                  itemKey:
-                                                                      UniqueKey(),
-                                                                ),
-                                                              );
-                                                              Navigator.pop(
-                                                                  context);
-                                                            },
-                                                            child: Container(
-                                                              padding:
-                                                                  const EdgeInsets
-                                                                      .all(10),
-                                                              decoration:
-                                                                  const BoxDecoration(
-                                                                borderRadius:
-                                                                    BorderRadius
-                                                                        .all(
-                                                                  Radius
-                                                                      .circular(
-                                                                          10),
-                                                                ),
-                                                                color:
-                                                                    mainColor,
-                                                              ),
-                                                              child: const Icon(
-                                                                Icons.add,
-                                                                size: 20,
-                                                                color: Colors
-                                                                    .white,
-                                                              ),
-                                                            ),
+                                                        ),
+                                                      ),
+                                                    ),
+                                                    InkWell(
+                                                      onTap: () {
+                                                        if (category != 3) {
+                                                          setState(() {
+                                                            category = 3;
+                                                            categoryLength =
+                                                                sleepList
+                                                                    .length;
+                                                            target = sleepList;
+                                                          });
+                                                        }
+                                                        debugPrint(
+                                                            "$category 누름.");
+                                                      },
+                                                      child: Container(
+                                                        padding:
+                                                            const EdgeInsets
+                                                                .all(10),
+                                                        decoration:
+                                                            BoxDecoration(
+                                                          color: category == 3
+                                                              ? mainColor
+                                                              : null,
+                                                          borderRadius:
+                                                              BorderRadius
+                                                                  .circular(10),
+                                                          border: Border.all(
+                                                              color: mainColor),
+                                                        ),
+                                                        child: Text(
+                                                          "숙박",
+                                                          style: TextStyle(
+                                                            color: category == 3
+                                                                ? Colors.white
+                                                                : mainColor,
                                                           ),
-                                                        ],
+                                                        ),
                                                       ),
                                                     ),
                                                   ],
                                                 ),
                                               ),
-                                            );
-                                          },
+                                            ),
+                                            const SizedBox(height: 10),
+                                            //아이템 목록 화면
+                                            Expanded(
+                                              child: ListView.builder(
+                                                itemCount: categoryLength,
+                                                itemBuilder: (context, index) {
+                                                  return Card(
+                                                    child: Padding(
+                                                      padding:
+                                                          const EdgeInsets.all(
+                                                              5.0),
+                                                      child: Row(
+                                                        mainAxisAlignment:
+                                                            MainAxisAlignment
+                                                                .spaceBetween,
+                                                        mainAxisSize:
+                                                            MainAxisSize.max,
+                                                        children: [
+                                                          Flexible(
+                                                            flex: 7,
+                                                            child: Column(
+                                                              crossAxisAlignment:
+                                                                  CrossAxisAlignment
+                                                                      .start,
+                                                              children: [
+                                                                Container(
+                                                                  padding:
+                                                                      const EdgeInsets
+                                                                          .all(
+                                                                          5),
+                                                                  decoration: BoxDecoration(
+                                                                      color: tourTypeColor(
+                                                                          target[index]
+                                                                              .contentTypeId),
+                                                                      borderRadius: const BorderRadius
+                                                                          .all(
+                                                                          Radius.circular(
+                                                                              5))),
+                                                                  child: Text(
+                                                                    tourTypeText(
+                                                                        target[index]
+                                                                            .contentTypeId),
+                                                                    style:
+                                                                        const TextStyle(
+                                                                      color: Colors
+                                                                          .white,
+                                                                      fontSize:
+                                                                          16.0,
+                                                                    ),
+                                                                  ),
+                                                                ),
+                                                                const SizedBox(
+                                                                  height: 3,
+                                                                ),
+                                                                Text(
+                                                                  target[index]
+                                                                      .title,
+                                                                  style: const TextStyle(
+                                                                      fontWeight:
+                                                                          FontWeight
+                                                                              .bold),
+                                                                ),
+                                                                const SizedBox(
+                                                                  height: 3,
+                                                                ),
+                                                                Text(
+                                                                  target[index]
+                                                                      .address,
+                                                                ),
+                                                              ],
+                                                            ),
+                                                          ),
+                                                          Flexible(
+                                                            flex: 3,
+                                                            child: Column(
+                                                              children: [
+                                                                InkWell(
+                                                                  onTap: () {
+                                                                    showDialog(
+                                                                      context:
+                                                                          context,
+                                                                      builder:
+                                                                          (context) {
+                                                                        return DetailInfoDialog(
+                                                                            title:
+                                                                                target[index].title,
+                                                                            address: target[index].address,
+                                                                            mapX: target[index].mapX,
+                                                                            mapY: target[index].mapY,
+                                                                            //시간 크게 의미없어서 그냥 지금으로 넘김.
+                                                                            //추후 리팩토링때 애초에 이 함수에서 그냥 시간을 안받게 해도됨. 상세정보에선 시간안봄.
+                                                                            enterTime: DateTime.now(),
+                                                                            exitTime: DateTime.now(),
+                                                                            imageUrl: target[index].imageUrl);
+                                                                      },
+                                                                    );
+                                                                  },
+                                                                  // 클릭시 일정 추가하는 부분.
+                                                                  child:
+                                                                      Container(
+                                                                    padding:
+                                                                        const EdgeInsets
+                                                                            .all(
+                                                                            8),
+                                                                    decoration:
+                                                                        BoxDecoration(
+                                                                      borderRadius:
+                                                                          const BorderRadius
+                                                                              .all(
+                                                                        Radius.circular(
+                                                                            10),
+                                                                      ),
+                                                                      border: Border.all(
+                                                                          color:
+                                                                              mainColor,
+                                                                          width:
+                                                                              2),
+                                                                    ),
+                                                                    child:
+                                                                        const Icon(
+                                                                      Icons
+                                                                          .location_on,
+                                                                      size: 20,
+                                                                      color:
+                                                                          mainColor,
+                                                                    ),
+                                                                  ),
+                                                                ),
+                                                                const SizedBox(
+                                                                  height: 3,
+                                                                ),
+                                                                InkWell(
+                                                                  onTap: () {
+                                                                    //////////////////
+                                                                    debugPrint(
+                                                                        "$index 누른거야..$clickedIndex");
+
+                                                                    finalTourList
+                                                                        .insert(
+                                                                      clickedIndex,
+                                                                      FinalTourData(
+                                                                        title: target[index]
+                                                                            .title,
+                                                                        address:
+                                                                            target[index].address,
+                                                                        imageUrl:
+                                                                            target[index].imageUrl,
+                                                                        dist: target[index]
+                                                                            .dist,
+                                                                        mapX: target[index]
+                                                                            .mapX,
+                                                                        mapY: target[index]
+                                                                            .mapY,
+                                                                        contentId:
+                                                                            target[index].contentId,
+                                                                        contentTypeId:
+                                                                            target[index].contentTypeId,
+                                                                        enterTime:
+                                                                            finalTourList[clickedIndex - 1].exitTime,
+                                                                        exitTime:
+                                                                            finalTourList[clickedIndex].enterTime,
+                                                                        itemKey:
+                                                                            UniqueKey(),
+                                                                      ),
+                                                                    );
+                                                                    Navigator.pop(
+                                                                        context);
+                                                                  },
+                                                                  child:
+                                                                      Container(
+                                                                    padding:
+                                                                        const EdgeInsets
+                                                                            .all(
+                                                                            10),
+                                                                    decoration:
+                                                                        const BoxDecoration(
+                                                                      borderRadius:
+                                                                          BorderRadius
+                                                                              .all(
+                                                                        Radius.circular(
+                                                                            10),
+                                                                      ),
+                                                                      color:
+                                                                          mainColor,
+                                                                    ),
+                                                                    child:
+                                                                        const Icon(
+                                                                      Icons.add,
+                                                                      size: 20,
+                                                                      color: Colors
+                                                                          .white,
+                                                                    ),
+                                                                  ),
+                                                                ),
+                                                              ],
+                                                            ),
+                                                          ),
+                                                        ],
+                                                      ),
+                                                    ),
+                                                  );
+                                                },
+                                              ),
+                                            ),
+                                            const SizedBox(height: 10),
+                                            InkWell(
+                                              onTap: () {
+                                                Navigator.pop(
+                                                  context,
+                                                );
+                                              },
+                                              child: Container(
+                                                padding:
+                                                    const EdgeInsets.symmetric(
+                                                        horizontal: 20,
+                                                        vertical: 10),
+                                                decoration: BoxDecoration(
+                                                  color: mainColor,
+                                                  borderRadius:
+                                                      BorderRadius.circular(10),
+                                                ),
+                                                child: const Text(
+                                                  "취소",
+                                                  style: TextStyle(
+                                                      color: Colors.white),
+                                                ),
+                                              ),
+                                            ),
+                                          ],
                                         ),
                                       ),
-                                      const SizedBox(height: 10),
-                                      InkWell(
-                                        onTap: () {
-                                          Navigator.pop(
-                                            context,
-                                          );
-                                        },
-                                        child: Container(
-                                          padding: const EdgeInsets.symmetric(
-                                              horizontal: 20, vertical: 10),
-                                          decoration: BoxDecoration(
-                                            color: mainColor,
-                                            borderRadius:
-                                                BorderRadius.circular(10),
-                                          ),
-                                          child: const Text(
-                                            "취소",
-                                            style:
-                                                TextStyle(color: Colors.white),
-                                          ),
-                                        ),
-                                      ),
-                                    ],
-                                  ),
+                                    ),
+                                  );
+                                },
+                              );
+                              setState(() {});
+                            },
+                            child: const Card(
+                              elevation: 5,
+                              child: Padding(
+                                padding: EdgeInsets.symmetric(
+                                    horizontal: 30, vertical: 5),
+                                child: Icon(
+                                  Icons.add_location_alt_outlined,
+                                  color: mainColor,
                                 ),
                               ),
-                            );
-                          },
-                        );
-                        setState(() {});
-                      },
-                      child: const Card(
-                        elevation: 5,
-                        child: Padding(
-                          padding:
-                              EdgeInsets.symmetric(horizontal: 30, vertical: 5),
-                          child: Icon(
-                            Icons.add_location_alt_outlined,
-                            color: mainColor,
+                            ),
                           ),
-                        ),
+                          Text(
+                            "목적지 거리\n${calculateDistance(latStart: finalTourList[index - 1].mapY, lngStart: finalTourList[index - 1].mapX, latEnd: finalTourList[index].mapY, lngEnd: finalTourList[index].mapX)}",
+                            style: const TextStyle(
+                                color: mainColor, fontWeight: FontWeight.bold),
+                            textAlign: TextAlign.center,
+                          ),
+                        ],
                       ),
                     ),
-                    Text(
-                      "목적지 거리\n${calculateDistance(latStart: finalTourList[index - 1].mapY, lngStart: finalTourList[index - 1].mapX, latEnd: finalTourList[index].mapY, lngEnd: finalTourList[index].mapX)}",
-                      style: const TextStyle(
-                          color: mainColor, fontWeight: FontWeight.bold),
-                      textAlign: TextAlign.center,
-                    ),
+                    spotDayDurationCalc(index) == true
+                        ? Container(
+                            margin: const EdgeInsets.only(
+                                left: 20, right: 20, top: 20),
+                            width: double.infinity,
+                            child: Card(
+                              color: mainColor,
+                              child: Padding(
+                                padding:
+                                    const EdgeInsets.symmetric(vertical: 10),
+                                child: Text(
+                                  "${(finalTourList[index].enterTime.day - finalTourList[0].enterTime.day) + 1}일차",
+                                  style: const TextStyle(
+                                    color: Colors.white,
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 25,
+                                  ),
+                                  textAlign: TextAlign.center,
+                                ),
+                              ),
+                            ),
+                          )
+                        : const SizedBox()
                   ],
                 ),
+
+              if (index == 0)
+                Container(
+                  margin: const EdgeInsets.symmetric(horizontal: 20),
+                  width: double.infinity,
+                  child: Card(
+                    color: mainColor,
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 10),
+                      child: Text(
+                        "${(finalTourList[index].enterTime.day - finalTourList[0].enterTime.day) + 1}일차",
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontWeight: FontWeight.bold,
+                          fontSize: 25,
+                        ),
+                        textAlign: TextAlign.center,
+                      ),
+                    ),
+                  ),
+                ),
+
+              ///////////
               Card(
                 elevation: 10, // 그림자 효과 추가 (선택 사항)
-                margin: const EdgeInsets.all(8.0), // 카드 주위의 여백 (선택 사항)
+                margin: const EdgeInsets.symmetric(
+                    horizontal: 8), // 카드 주위의 여백 (선택 사항)
                 child: Padding(
                   padding: const EdgeInsets.all(10.0), // 내용 주위의 여백 (선택 사항)
                   child: Row(
-                    crossAxisAlignment: CrossAxisAlignment.start,
                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     mainAxisSize: MainAxisSize.max,
                     children: [
@@ -1083,7 +1141,7 @@ class _TourSpotListState extends State<TourSpotList> {
                               "${index + 1}. ${finalTourList[index].title}",
                               style: const TextStyle(
                                 overflow: TextOverflow.fade,
-                                fontSize: 15.0,
+                                fontSize: 18.0,
                                 fontWeight: FontWeight.bold,
                               ),
                             ),
@@ -1118,7 +1176,6 @@ class _TourSpotListState extends State<TourSpotList> {
                                             "IN",
                                             style: TextStyle(
                                               color: mainColor,
-                                              fontSize: 20,
                                               fontWeight: FontWeight.bold,
                                             ),
                                           ),
@@ -1263,7 +1320,6 @@ class _TourSpotListState extends State<TourSpotList> {
                                               "OUT",
                                               style: TextStyle(
                                                 color: mainColor,
-                                                fontSize: 20,
                                                 fontWeight: FontWeight.bold,
                                               ),
                                             ),
@@ -1293,10 +1349,9 @@ class _TourSpotListState extends State<TourSpotList> {
                                   borderRadius: BorderRadius.circular(15),
                                 ),
                                 child: Column(children: [
-                                  Text("경유시간",
+                                  const Text("경유시간",
                                       style: TextStyle(
                                         color: mainColor,
-                                        fontSize: 20,
                                         fontWeight: FontWeight.bold,
                                       )),
                                   Text(
@@ -1307,12 +1362,13 @@ class _TourSpotListState extends State<TourSpotList> {
                         ),
                       ),
                       const SizedBox(
-                        width: 15,
+                        width: 5,
                       ),
                       Flexible(
                         flex: 3,
                         child: Column(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                          mainAxisSize: MainAxisSize.max,
                           children: [
                             Container(
                               padding: const EdgeInsets.all(5),
@@ -1331,41 +1387,37 @@ class _TourSpotListState extends State<TourSpotList> {
                               ),
                             ),
                             const SizedBox(height: 5),
-                            SizedBox(
-                              width: 100,
-                              height: 60,
-                              child: Image.network(
-                                finalTourList[index].imageUrl,
-                                fit: BoxFit.fill,
-                                errorBuilder: (BuildContext context,
-                                    Object exception, StackTrace? stackTrace) {
-                                  // 에러 처리 로직을 여기에 구현
-                                  return const Column(
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    children: [
-                                      Icon(
-                                        Icons.image_not_supported_outlined,
-                                        color: mainColor,
-                                      ),
-                                      Text(
-                                        'No Image',
-                                        style: TextStyle(color: mainColor),
-                                      ),
-                                    ],
-                                  );
-                                },
-                              ),
+                            Image.network(
+                              finalTourList[index].imageUrl,
+                              fit: BoxFit.fill,
+                              errorBuilder: (BuildContext context,
+                                  Object exception, StackTrace? stackTrace) {
+                                // 에러 처리 로직을 여기에 구현
+                                return const Column(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Icon(
+                                      Icons.image_not_supported_outlined,
+                                      color: mainColor,
+                                    ),
+                                    Text(
+                                      'No Image',
+                                      style: TextStyle(color: mainColor),
+                                    ),
+                                  ],
+                                );
+                              },
                             ),
                             const SizedBox(height: 10),
                             InkWell(
                               onTap: () {
-                                debugPrint("$index 번째를 눌렀다.");
                                 setState(() {
                                   finalTourList.removeAt(index);
                                 });
                               },
                               child: Container(
-                                padding: const EdgeInsets.all(10),
+                                padding: const EdgeInsets.symmetric(
+                                    horizontal: 15, vertical: 5),
                                 decoration: BoxDecoration(
                                   borderRadius: BorderRadius.circular(10),
                                   color: mainColor,
@@ -1376,13 +1428,6 @@ class _TourSpotListState extends State<TourSpotList> {
                                       Icons.delete_forever_rounded,
                                       color: Colors.white,
                                       size: 30,
-                                    ),
-                                    Text(
-                                      "삭제하기",
-                                      style: TextStyle(
-                                          color: Colors.white,
-                                          fontWeight: FontWeight.bold,
-                                          fontSize: 12),
                                     ),
                                   ],
                                 ),
@@ -1645,6 +1690,15 @@ String tourTypeText(contentTypeId) {
       break;
   }
   return typeValue;
+}
+
+//스팟 사이 날짜차이 계산
+bool spotDayDurationCalc(int index) {
+  if (finalTourList[index].enterTime.day >
+      finalTourList[index - 1].enterTime.day) {
+    return true;
+  }
+  return false;
 }
 
 //각 스팟 사이 시간간격 계산
