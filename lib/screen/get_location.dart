@@ -56,9 +56,6 @@ String calculateDistance({
   var y = (pi2 - pi1);
   var z = sqrt(x * x + y * y) * r;
 
-  debugPrint(
-      "$latStart,$lngStart 그리고 $latEnd, $lngEnd로 간다.!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
-
   debugPrint("${(z).toStringAsFixed(3)} km");
   if (z < 1) {
     return "${(z * 1000).toStringAsFixed(0)} M";

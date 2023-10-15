@@ -10,6 +10,7 @@ import 'package:flutter_widget_from_html/flutter_widget_from_html.dart'; //안�
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:intl/intl.dart';
 import 'package:kakao_map_plugin/kakao_map_plugin.dart';
+import 'package:tour_with_tourapi/screen/chatgpt_func.dart';
 import 'package:tour_with_tourapi/screen/get_location.dart';
 import 'package:tour_with_tourapi/screen/kakao_map_func.dart';
 import 'package:tour_with_tourapi/screen/location_base_info.dart';
@@ -77,7 +78,16 @@ void insertRoute() {
 
 class _ScheduleListState extends State<ScheduleList> {
   bool _isProgressing = false;
+  bool _isGPTLoaded = false;
+  String chatbotAnswer = "";
   late int randomTour;
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    _isGPTLoaded = false;
+  }
 
   ///화면 나갔다왔을때 새로고침을 위한 didChangeDependencies 사용.
   @override
@@ -352,6 +362,33 @@ class _ScheduleListState extends State<ScheduleList> {
                 /////
               }
               _isProgressing = false;
+              String tourPrompt =
+                  "여행 기간. ${DateFormat('yyyy년 MM월 dd일 HH:mm').format(widget.startDate)}~${DateFormat('yyyy년 MM월 dd일 HH:mm').format(widget.endDate)}. 여행 일정. ";
+              int promptIndex = 1;
+              for (var item in finalTourList) {
+                debugPrint(
+                    "$promptIndex. ${item.title} 삽입한다. 총 길이는 ${tourPrompt.length}");
+                if (tourPrompt.length > 3000) break; //프롬프트가 너무 길면 요청이 불가능함.
+                tourPrompt +=
+                    "$promptIndex. 장소:${item.title}, 기간:${DateFormat('yyyy년 MM월 dd일 HH:mm').format(item.enterTime)}~${DateFormat('yyyy년 MM월 dd일 HH:mm').format(item.exitTime)}. 목적:${tourTypeText(item.contentTypeId)}";
+                promptIndex++;
+              }
+              if (!_isGPTLoaded) {
+                debugPrint("여행일정 GPT에게 요청함.\n$tourPrompt");
+                newGenerateText(tourPrompt).then(
+                  (value) {
+                    if (mounted) {
+                      setState(
+                        () {
+                          chatbotAnswer = value;
+                          _isGPTLoaded = true;
+                        },
+                      );
+                    }
+                  },
+                );
+              }
+
               debugPrint("${widget.apiUrl}을 통한 호출 완료!!!!!!!!!");
             },
           );
@@ -441,7 +478,7 @@ class _ScheduleListState extends State<ScheduleList> {
                               );
                             },
                             child: Container(
-                              padding: EdgeInsets.all(5),
+                              padding: const EdgeInsets.all(5),
                               decoration: BoxDecoration(
                                 border: Border.all(color: mainColor, width: 2),
                                 borderRadius: const BorderRadius.all(
@@ -462,52 +499,140 @@ class _ScheduleListState extends State<ScheduleList> {
                       const SizedBox(height: 10),
 
                       const Expanded(child: TourSpotList()),
-                      Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: InkWell(
-                          onTap: () async {
-                            ///챗 지피티 호출 기능 구현예정
 
-                            debugPrint(
-                                "시작일시 - ${DateFormat('yyyy.MM.dd. HH:mm').format(widget.startDate)}");
-                            debugPrint(
-                                "종료일시 - ${DateFormat('yyyy.MM.dd. HH:mm').format(widget.endDate)}");
-                            int listNum = 0;
-                            String dataForSendGPT = tourSetting;
-                            for (var element in finalTourList) {
-                              listNum++;
-                              dataForSendGPT =
-                                  "$dataForSendGPT i:$listNum name:${element.title}, code:${element.contentTypeId}, location:${element.mapX},${element.mapY}.\n";
-                              if (listNum > 100) {
-                                debugPrint(dataForSendGPT);
-                                Clipboard.setData(
-                                  ClipboardData(text: dataForSendGPT),
-                                );
-                                break;
-                              }
-                            }
-                            // debugPrint(
-                            // "${locationList[0].title}, ${locationList[0].contentTypeId}, ${locationList[0].mapX},${locationList[0].mapY},");
-                          },
-                          child: Container(
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 10,
-                              vertical: 15,
-                            ),
-                            decoration: BoxDecoration(
-                              color: mainColor,
-                              borderRadius: BorderRadius.circular(5),
-                            ),
-                            child: const Text(
-                              'AI의 여행설명',
-                              style: TextStyle(
-                                color: Colors.white,
+                      _isGPTLoaded
+                          ? Padding(
+                              padding: const EdgeInsets.all(8.0),
+                              child: InkWell(
+                                onTap: () {
+                                  ///챗 지피티 호출 기능 구현예정
+                                  ///
+
+                                  showDialog(
+                                    context: context,
+                                    builder: (context) {
+                                      return StatefulBuilder(
+                                        builder: (context, setState) => Dialog(
+                                          child: Padding(
+                                            padding: const EdgeInsets.all(10.0),
+                                            child: Column(
+                                              mainAxisSize: MainAxisSize.min,
+                                              children: [
+                                                Container(
+                                                  width: double.infinity,
+                                                  padding:
+                                                      const EdgeInsets.all(10),
+                                                  decoration:
+                                                      const BoxDecoration(
+                                                    color: mainColor,
+                                                    borderRadius:
+                                                        BorderRadius.only(
+                                                      topLeft:
+                                                          Radius.circular(10),
+                                                      topRight:
+                                                          Radius.circular(10),
+                                                    ),
+                                                  ),
+                                                  child: const Text(
+                                                    "여행 TIP",
+                                                    style: TextStyle(
+                                                        fontSize: 17,
+                                                        fontWeight:
+                                                            FontWeight.bold,
+                                                        color: Colors.white),
+                                                  ),
+                                                ),
+                                                Container(
+                                                  constraints:
+                                                      const BoxConstraints(
+                                                    maxHeight: 400,
+                                                  ),
+                                                  decoration: BoxDecoration(
+                                                    border: Border.all(
+                                                        color: mainColor),
+                                                  ),
+                                                  padding:
+                                                      const EdgeInsets.all(8),
+                                                  child: SingleChildScrollView(
+                                                    child: Text(
+                                                      chatbotAnswer,
+                                                      style: const TextStyle(
+                                                          fontSize: 15),
+                                                    ),
+                                                  ),
+                                                ),
+                                                const SizedBox(
+                                                  height: 10,
+                                                ),
+                                                InkWell(
+                                                  onTap: () =>
+                                                      Navigator.pop(context),
+                                                  child: Container(
+                                                    padding:
+                                                        const EdgeInsets.all(
+                                                            10),
+                                                    decoration:
+                                                        const BoxDecoration(
+                                                      color: mainColor,
+                                                      borderRadius:
+                                                          BorderRadius.all(
+                                                        Radius.circular(10),
+                                                      ),
+                                                    ),
+                                                    child: const Text(
+                                                      "닫기",
+                                                      style: TextStyle(
+                                                          fontSize: 17,
+                                                          fontWeight:
+                                                              FontWeight.bold,
+                                                          color: Colors.white),
+                                                    ),
+                                                  ),
+                                                ),
+                                              ],
+                                            ),
+                                          ),
+                                        ),
+                                      );
+                                    },
+                                  );
+                                },
+                                child: Container(
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 10,
+                                    vertical: 15,
+                                  ),
+                                  decoration: BoxDecoration(
+                                    color: mainColor,
+                                    borderRadius: BorderRadius.circular(5),
+                                  ),
+                                  child: const Text(
+                                    'AI의 여행설명',
+                                    style: TextStyle(
+                                      color: Colors.white,
+                                    ),
+                                    textAlign: TextAlign.center,
+                                  ),
+                                ),
                               ),
-                              textAlign: TextAlign.center,
+                            )
+                          : Card(
+                              elevation: 12,
+                              child: Padding(
+                                padding: const EdgeInsets.all(15.0),
+                                child: Column(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    const Text("AI가 여행 꿀팁을 작성중이에요."),
+                                    const SizedBox(
+                                      height: 10,
+                                    ),
+                                    LoadingAnimationWidget.discreteCircle(
+                                        color: mainColor, size: 30),
+                                  ],
+                                ),
+                              ),
                             ),
-                          ),
-                        ),
-                      ),
                     ],
                   ),
                 ),
