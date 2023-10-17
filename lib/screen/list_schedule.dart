@@ -1319,10 +1319,13 @@ class _TourSpotListState extends State<TourSpotList> {
                                     ),
                                     //나가는 시간 설정하는 부분.
                                     InkWell(
-                                      onTap: () {
-                                        showDialog(
+                                      onTap: () async {
+                                        await showDialog(
                                           context: context,
                                           builder: (context) {
+                                            DateTime updateTime =
+                                                finalTourList[index]
+                                                    .exitTime; //나가는 시간 설정부분
                                             return Dialog(
                                               child: Column(
                                                 mainAxisSize: MainAxisSize.min,
@@ -1332,7 +1335,9 @@ class _TourSpotListState extends State<TourSpotList> {
                                                     child: CupertinoDatePicker(
                                                       ////////////
                                                       onDateTimeChanged:
-                                                          (value) {},
+                                                          (value) {
+                                                        updateTime = value;
+                                                      },
                                                       initialDateTime:
                                                           finalTourList[index]
                                                               .exitTime,
@@ -1353,36 +1358,66 @@ class _TourSpotListState extends State<TourSpotList> {
                                                   ),
                                                   Flexible(
                                                     flex: 3,
-                                                    child: Container(
-                                                      margin: const EdgeInsets
-                                                          .symmetric(
-                                                          vertical: 5),
-                                                      padding:
-                                                          const EdgeInsets.all(
-                                                              10),
-                                                      decoration: BoxDecoration(
-                                                        color: mainColor,
-                                                        border: Border.all(
-                                                            color: mainColor),
-                                                        borderRadius:
-                                                            BorderRadius
-                                                                .circular(10),
-                                                      ),
-                                                      child: const Row(
-                                                        mainAxisSize:
-                                                            MainAxisSize.min,
-                                                        children: [
-                                                          Icon(
-                                                            Icons.check,
-                                                            color: Colors.white,
-                                                          ),
-                                                          Text(
-                                                            "시간 변경",
-                                                            style: TextStyle(
-                                                                color: Colors
-                                                                    .white),
-                                                          ),
-                                                        ],
+                                                    child: InkWell(
+                                                      onTap: () {
+                                                        /////////////
+                                                        ///
+
+                                                        finalListValueChanger(
+                                                            index: index,
+                                                            exitTime:
+                                                                updateTime);
+                                                        if (index <
+                                                            finalTourList
+                                                                .length) {
+                                                          if (updateTime.isAfter(
+                                                              finalTourList[
+                                                                      index + 1]
+                                                                  .enterTime)) {
+                                                            finalListValueChanger(
+                                                                index:
+                                                                    index + 1,
+                                                                enterTime:
+                                                                    updateTime);
+                                                          }
+                                                        }
+                                                        setState(() {});
+                                                        debugPrint("네. 잘 변경됨.");
+                                                        Navigator.pop(context);
+                                                      },
+                                                      child: Container(
+                                                        margin: const EdgeInsets
+                                                            .symmetric(
+                                                            vertical: 5),
+                                                        padding:
+                                                            const EdgeInsets
+                                                                .all(10),
+                                                        decoration:
+                                                            BoxDecoration(
+                                                          color: mainColor,
+                                                          border: Border.all(
+                                                              color: mainColor),
+                                                          borderRadius:
+                                                              BorderRadius
+                                                                  .circular(10),
+                                                        ),
+                                                        child: const Row(
+                                                          mainAxisSize:
+                                                              MainAxisSize.min,
+                                                          children: [
+                                                            Icon(
+                                                              Icons.check,
+                                                              color:
+                                                                  Colors.white,
+                                                            ),
+                                                            Text(
+                                                              "시간 변경",
+                                                              style: TextStyle(
+                                                                  color: Colors
+                                                                      .white),
+                                                            ),
+                                                          ],
+                                                        ),
                                                       ),
                                                     ),
                                                   ),
@@ -1571,6 +1606,34 @@ class _TourSpotListState extends State<TourSpotList> {
       },
     );
   }
+}
+
+void finalListValueChanger(
+    {required int index,
+    String? title,
+    String? address,
+    String? imageUrl,
+    double? dist,
+    double? mapX,
+    double? mapY,
+    String? contentId,
+    String? contentTypeId,
+    DateTime? enterTime,
+    DateTime? exitTime,
+    Key? itemKey}) {
+  finalTourList[index] = FinalTourData(
+    title: title ?? finalTourList[index].title,
+    address: address ?? finalTourList[index].address,
+    imageUrl: imageUrl ?? finalTourList[index].imageUrl,
+    dist: dist ?? finalTourList[index].dist,
+    mapX: mapX ?? finalTourList[index].mapX,
+    mapY: mapY ?? finalTourList[index].mapY,
+    contentId: contentId ?? finalTourList[index].contentId,
+    contentTypeId: contentTypeId ?? finalTourList[index].contentTypeId,
+    enterTime: enterTime ?? finalTourList[index].enterTime,
+    exitTime: exitTime ?? finalTourList[index].exitTime,
+    itemKey: itemKey ?? finalTourList[index].itemKey,
+  );
 }
 
 //상세정보 반환
