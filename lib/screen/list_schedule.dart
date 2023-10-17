@@ -1286,32 +1286,185 @@ class _TourSpotListState extends State<TourSpotList> {
                                 scrollDirection: Axis.horizontal,
                                 child: Row(
                                   children: [
-                                    Container(
-                                      padding: const EdgeInsets.symmetric(
-                                        horizontal: 6,
-                                        vertical: 5,
-                                      ),
-                                      decoration: BoxDecoration(
-                                        border: Border.all(color: mainColor),
-                                        borderRadius: BorderRadius.circular(15),
-                                      ),
-                                      child: Column(
-                                        children: [
-                                          const Text(
-                                            "IN",
-                                            style: TextStyle(
-                                              color: mainColor,
-                                              fontWeight: FontWeight.bold,
+                                    InkWell(
+                                      ///들어오는 시간 설정하는 부분
+                                      onTap: () async {
+                                        await showDialog(
+                                          context: context,
+                                          builder: (context) {
+                                            DateTime updateTime =
+                                                finalTourList[index]
+                                                    .enterTime; //들어오는는 시간 설정부분
+                                            return Dialog(
+                                              child: Column(
+                                                mainAxisSize: MainAxisSize.min,
+                                                children: [
+                                                  Flexible(
+                                                    flex: 3,
+                                                    child: CupertinoDatePicker(
+                                                      ////////////
+                                                      onDateTimeChanged:
+                                                          (value) {
+                                                        updateTime = value;
+                                                      },
+                                                      initialDateTime:
+                                                          finalTourList[index]
+                                                              .enterTime,
+                                                      minimumDate: index == 0
+                                                          ? finalTourList[index]
+                                                              .enterTime
+                                                          : finalTourList[
+                                                                  index - 1]
+                                                              .enterTime,
+
+                                                      maximumDate:
+                                                          finalTourList[index]
+                                                              .exitTime,
+                                                      use24hFormat: true,
+                                                    ),
+                                                  ),
+                                                  Flexible(
+                                                    flex: 3,
+                                                    child: InkWell(
+                                                      onTap: () {
+                                                        /////////////
+                                                        ///
+
+                                                        finalListValueChanger(
+                                                            index: index,
+                                                            enterTime:
+                                                                updateTime);
+                                                        if (index != 0) {
+                                                          if (updateTime.isBefore(
+                                                              finalTourList[
+                                                                      index - 1]
+                                                                  .exitTime)) {
+                                                            finalListValueChanger(
+                                                                index:
+                                                                    index - 1,
+                                                                exitTime:
+                                                                    updateTime);
+                                                          }
+                                                        }
+                                                        setState(() {});
+                                                        Navigator.pop(context);
+                                                      },
+                                                      child: Container(
+                                                        margin: const EdgeInsets
+                                                            .symmetric(
+                                                            vertical: 5),
+                                                        padding:
+                                                            const EdgeInsets
+                                                                .all(10),
+                                                        decoration:
+                                                            BoxDecoration(
+                                                          color: mainColor,
+                                                          border: Border.all(
+                                                              color: mainColor),
+                                                          borderRadius:
+                                                              BorderRadius
+                                                                  .circular(10),
+                                                        ),
+                                                        child: const Row(
+                                                          mainAxisSize:
+                                                              MainAxisSize.min,
+                                                          children: [
+                                                            Icon(
+                                                              Icons.check,
+                                                              color:
+                                                                  Colors.white,
+                                                            ),
+                                                            Text(
+                                                              "시간 변경",
+                                                              style: TextStyle(
+                                                                  color: Colors
+                                                                      .white),
+                                                            ),
+                                                          ],
+                                                        ),
+                                                      ),
+                                                    ),
+                                                  ),
+                                                  Flexible(
+                                                    flex: 3,
+                                                    child: InkWell(
+                                                      onTap: () =>
+                                                          Navigator.pop(
+                                                              context),
+                                                      child: Container(
+                                                        margin: const EdgeInsets
+                                                            .symmetric(
+                                                            vertical: 5),
+                                                        padding:
+                                                            const EdgeInsets
+                                                                .all(10),
+                                                        decoration:
+                                                            BoxDecoration(
+                                                          border: Border.all(
+                                                              color: mainColor),
+                                                          borderRadius:
+                                                              BorderRadius
+                                                                  .circular(10),
+                                                        ),
+                                                        child: const Row(
+                                                          mainAxisSize:
+                                                              MainAxisSize.min,
+                                                          children: [
+                                                            Icon(
+                                                              Icons.close,
+                                                              color: mainColor,
+                                                            ),
+                                                            Text(
+                                                              "변경 취소",
+                                                              style: TextStyle(
+                                                                  color:
+                                                                      mainColor),
+                                                            ),
+                                                          ],
+                                                        ),
+                                                      ),
+                                                    ),
+                                                  ),
+                                                  const SizedBox(
+                                                    height: 15,
+                                                  ),
+                                                ],
+                                              ),
+                                            );
+                                          },
+                                        );
+                                      },
+                                      //////
+
+                                      child: Container(
+                                        padding: const EdgeInsets.symmetric(
+                                          horizontal: 6,
+                                          vertical: 5,
+                                        ),
+                                        decoration: BoxDecoration(
+                                          border: Border.all(color: mainColor),
+                                          borderRadius:
+                                              BorderRadius.circular(15),
+                                        ),
+                                        child: Column(
+                                          children: [
+                                            const Text(
+                                              "IN",
+                                              style: TextStyle(
+                                                color: mainColor,
+                                                fontWeight: FontWeight.bold,
+                                              ),
                                             ),
-                                          ),
-                                          Text(
-                                            DateFormat("MM월 dd일\nHH:mm").format(
-                                                finalTourList[index].enterTime),
-                                            textAlign: TextAlign.center,
-                                            style:
-                                                const TextStyle(fontSize: 15),
-                                          ),
-                                        ],
+                                            Text(
+                                              DateFormat("MM월 dd일\nHH:mm")
+                                                  .format(finalTourList[index]
+                                                      .enterTime),
+                                              textAlign: TextAlign.center,
+                                              style:
+                                                  const TextStyle(fontSize: 15),
+                                            ),
+                                          ],
+                                        ),
                                       ),
                                     ),
                                     const SizedBox(
@@ -1382,7 +1535,6 @@ class _TourSpotListState extends State<TourSpotList> {
                                                           }
                                                         }
                                                         setState(() {});
-                                                        debugPrint("네. 잘 변경됨.");
                                                         Navigator.pop(context);
                                                       },
                                                       child: Container(
@@ -1423,35 +1575,41 @@ class _TourSpotListState extends State<TourSpotList> {
                                                   ),
                                                   Flexible(
                                                     flex: 3,
-                                                    child: Container(
-                                                      margin: const EdgeInsets
-                                                          .symmetric(
-                                                          vertical: 5),
-                                                      padding:
-                                                          const EdgeInsets.all(
-                                                              10),
-                                                      decoration: BoxDecoration(
-                                                        border: Border.all(
-                                                            color: mainColor),
-                                                        borderRadius:
-                                                            BorderRadius
-                                                                .circular(10),
-                                                      ),
-                                                      child: const Row(
-                                                        mainAxisSize:
-                                                            MainAxisSize.min,
-                                                        children: [
-                                                          Icon(
-                                                            Icons.close,
-                                                            color: mainColor,
-                                                          ),
-                                                          Text(
-                                                            "변경 취소",
-                                                            style: TextStyle(
-                                                                color:
-                                                                    mainColor),
-                                                          ),
-                                                        ],
+                                                    child: InkWell(
+                                                      onTap: () =>
+                                                          Navigator.pop(
+                                                              context),
+                                                      child: Container(
+                                                        margin: const EdgeInsets
+                                                            .symmetric(
+                                                            vertical: 5),
+                                                        padding:
+                                                            const EdgeInsets
+                                                                .all(10),
+                                                        decoration:
+                                                            BoxDecoration(
+                                                          border: Border.all(
+                                                              color: mainColor),
+                                                          borderRadius:
+                                                              BorderRadius
+                                                                  .circular(10),
+                                                        ),
+                                                        child: const Row(
+                                                          mainAxisSize:
+                                                              MainAxisSize.min,
+                                                          children: [
+                                                            Icon(
+                                                              Icons.close,
+                                                              color: mainColor,
+                                                            ),
+                                                            Text(
+                                                              "변경 취소",
+                                                              style: TextStyle(
+                                                                  color:
+                                                                      mainColor),
+                                                            ),
+                                                          ],
+                                                        ),
                                                       ),
                                                     ),
                                                   ),
