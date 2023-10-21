@@ -1,6 +1,6 @@
 # 인공지능을 활용한 여행 가이드 앱입니다.
  
- 
+다운로드 링크(Android) - https://play.google.com/store/apps/details?id=altools.smartbusan
  
 ![그림1](https://github.com/tororae/tourApp_with_tour_api/assets/119999832/69d51054-85ca-404f-ad59-df2bdb72c7ed)
  
